@@ -16,10 +16,15 @@ var Enemy = function(loc) {
     this.height = 77;
     this.width = 99;
     
+    this.row = getRandomInt(2,5);
     this.x = -1 * this.width;
-    this.y = blockHeight*getRandomInt(2,5) - blockHeight/2 - this.height/2;;
+    this.y = blockHeight*this.row - blockHeight/2 - this.height/2;
+
+    this.size = [this.width, this.height];
+    this.loc = [this.x, this.y];
     
     this.speed = getRandomInt(100,600);
+    this.toRemove = false;
 }
 
 // Update the enemy's position, required method for game
@@ -29,8 +34,10 @@ Enemy.prototype.update = function(dt) {
     // which will ensure the game runs at the same speed for
     // all computers.
     this.x += this.speed * dt;
-    if(this.x > blockWidth*5)
-        this.reset;
+
+    //if the entitiy has moved off the screen then change the toRemove property to true
+    if(this.x > blockWidth * 5)
+        this.toRemove = true;
 }
 
 // Draw the enemy on the screen, required method for game
@@ -47,9 +54,13 @@ var Player = function() {
     
     this.sprite = 'images/char-boy.png';
     
-    //set the start co-ordinates to teh middle of the square. Assign a random column
+    //set the start co-ordinates to the middle of the square. Assign a random column
+    this.row = 5;
     this.x = blockWidth*getRandomInt(1,6) - blockWidth/2 - this.width/2;
-    this.y = blockHeight*5 - blockHeight/2 - this.height/2;
+    this.y = blockHeight*this.row - blockHeight/2 - this.height/2;
+
+    this.size = [this.width, this.height];
+    this.loc = [this.x, this.y]; 
 
     //define the playing area based on size of sprite
     this.upperBound = blockHeight*2 - blockHeight/2 - this.height/2;
@@ -75,16 +86,20 @@ Player.prototype = {
                     this.x += blockWidth;//right command code
                 break;
             case 'up':
-                if(this.y !== this.upperBound)
+                if(this.y !== this.upperBound) {
                     this.y -= blockHeight;//up command code
+                    this.row--;
+                }
                 break;
             case 'down':
-                if(this.y !== this.lowerBound)
+                if(this.y !== this.lowerBound) {
                     this.y += blockHeight;//down command code
+                    this.row++;
+                }
                 break;
             default:
         }
-    console.log('x:' + this.x + '; y:' + this.y)
+    console.log('x:' + this.x + '; y:' + this.y + '; row: ' + this.row);
     }
 };
 
@@ -96,9 +111,9 @@ function getRandomInt(min, max) {
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 var allEnemies = [];
-var enemies = function(dt) {
-    if(dt>0.09)
-        //allEnemies.push(new Enemy([-20,100]));
+var enemies = function() {
+    if(getRandomInt(1,1000)<20)
+        allEnemies.push(new Enemy([-20,100]));
 }
 enemies();
 var player = new Player();

@@ -65,6 +65,7 @@ var Engine = (function(global) {
      */
     function init() {
         reset();
+
         lastTime = Date.now();
         main();
     }
@@ -80,7 +81,8 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+        //checkCollisions();
+        removeEntities();
     }
 
     /* This is called by the update function  and loops through all of the
@@ -91,12 +93,21 @@ var Engine = (function(global) {
      * render methods.
      */
     function updateEntities(dt) {
+        var i=0;
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
-        console.log(dt);
+        //console.log(dt);
         enemies(dt);
         player.update();
+    }
+
+    function removeEntities() {
+        for(var enemy in allEnemies) {
+            if (allEnemies[enemy].toRemove) {
+                allEnemies.splice(enemy,1);
+            }
+        }
     }
 
     /* This function initially draws the "game level", it will then call
@@ -159,11 +170,13 @@ var Engine = (function(global) {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
+         player.render();
+
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
 
-        player.render();
+        
     }
 
     /* This function does nothing but it could have been a good place to
