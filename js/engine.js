@@ -81,7 +81,7 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        //checkCollisions();
+        checkCollisions();
         removeEntities();
     }
 
@@ -97,7 +97,6 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
-        //console.log(dt);
         enemies(dt);
         player.update();
     }
@@ -108,6 +107,31 @@ var Engine = (function(global) {
                 allEnemies.splice(enemy,1);
             }
         }
+    }
+
+    function checkCollisions() {
+        var collision = false;
+        //console.log('Set initial collision boolean: ' + collision);
+        for(var enemy in allEnemies) {
+            //console.log('Loop through allEnemies[' + enemy + ']');
+            if(allEnemies[enemy].row === player.row) {
+                collision = boxCollides(allEnemies[enemy].x, allEnemies[enemy].width, player.x, player.width);
+                if(collision) {
+                    player.x = 0;
+                    player.y = 0;
+                    allEnemies.splice(enemy,1);
+                }
+            }
+
+        }
+    }
+
+    function collides(x, r, x2, r2) {
+    return ((r >= x2 && r < r2)||(x >= x2 && x < r2));
+    }
+
+    function boxCollides(x1, w1, x2, w2) {
+        return collides(x1, x1 + w1, x2, x2 + w2);
     }
 
     /* This function initially draws the "game level", it will then call

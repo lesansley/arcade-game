@@ -19,9 +19,6 @@ var Enemy = function(loc) {
     this.row = getRandomInt(2,5);
     this.x = -1 * this.width;
     this.y = blockHeight*this.row - blockHeight/2 - this.height/2;
-
-    this.size = [this.width, this.height];
-    this.loc = [this.x, this.y];
     
     this.speed = getRandomInt(100,600);
     this.toRemove = false;
@@ -58,9 +55,6 @@ var Player = function() {
     this.row = 5;
     this.x = blockWidth*getRandomInt(1,6) - blockWidth/2 - this.width/2;
     this.y = blockHeight*this.row - blockHeight/2 - this.height/2;
-
-    this.size = [this.width, this.height];
-    this.loc = [this.x, this.y]; 
 
     //define the playing area based on size of sprite
     this.upperBound = blockHeight*2 - blockHeight/2 - this.height/2;
@@ -115,9 +109,13 @@ var enemies = function() {
     if(getRandomInt(1,1000)<20)
         allEnemies.push(new Enemy([-20,100]));
 }
-enemies();
-var player = new Player();
 
+var createPlayer = function() {
+    player = new Player();
+}
+
+createPlayer();
+enemies();
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
