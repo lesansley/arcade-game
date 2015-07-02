@@ -27,7 +27,7 @@ var Engine = (function(global) {
 
     canvas.width = 505;
     canvas.height = 606;
-    doc.body.appendChild(canvas);
+    doc.body.appendChild(canvas);//add to DOM
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
@@ -107,6 +107,10 @@ var Engine = (function(global) {
         /* This array holds the relative URL to the image used
          * for that particular row of the game level.
          */
+
+         //blockWidth = 101;
+         //blockHeight = 83;
+
         var rowImages = [
                 'images/water-block.png',   // Top row is water
                 'images/stone-block.png',   // Row 1 of 3 of stone
@@ -132,7 +136,12 @@ var Engine = (function(global) {
                  * so that we get the benefits of caching these images, since
                  * we're using them over and over.
                  */
-                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
+
+                //the get function is used insted of just passing the url or array value
+                //in order that the cached image is presented 
+                //and not a new load of the image, which has perfromance implications.
+
+                ctx.drawImage(Resources.get(rowImages[row]), col * blockWidth, row * blockHeight); 
             }
         }
 
@@ -163,16 +172,15 @@ var Engine = (function(global) {
         // noop
     }
 
-    /* Go ahead and load all of the images we know we're going to need to
-     * draw our game level. Then set init as the callback method, so that when
-     * all of these images are properly loaded our game will start.
-     */
+    //Pre-loads all the images required for the game.
+    //The load function is called from the resources file.
+    //sends the array to the function in resources.js
     Resources.load([
-        'images/stone-block.png',
-        'images/water-block.png',
-        'images/grass-block.png',
-        'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/stone-block.png',//101x123
+        'images/water-block.png',//101x120
+        'images/grass-block.png',//101x131
+        'images/enemy-bug.png',//99x77
+        'images/char-boy.png' //67x88
     ]);
     Resources.onReady(init);
 
@@ -181,4 +189,6 @@ var Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
+    global.blockWidth = 101;
+    global.blockHeight = 83;
 })(this);

@@ -5,35 +5,36 @@
  * to load the same image multiple times.
  */
 (function() {
-    var resourceCache = {};
+    var resourceCache = {}; //define resouce cache as an object
     var loading = [];
     var readyCallbacks = [];
 
-    /* This is the publicly accessible image loading function. It accepts
+    //This function can be called from other places because it is defined as a method
+    //on the Resources object at the end of this function. To call it dot notation is
+    //used (i.e. Resources.load)
+    /* The call call is made from the engine files. The load function accepts
      * an array of strings pointing to image files or a string for a single
-     * image. It will then call our private image loading function accordingly.
+     * image. It will then call our private image loading function accordingly. 
      */
     function load(urlOrArr) {
-        if(urlOrArr instanceof Array) {
-            /* If the developer passed in an array of images
-             * loop through each value and call our image
-             * loader on that image file
-             */
-            urlOrArr.forEach(function(url) {
-                _load(url);
+        if(urlOrArr instanceof Array) {//check whether the parameter is an array or string
+            
+            urlOrArr.forEach(function(url) {//loop through the values in the array assigning them as 
+                //variable 'url'
+                _load(url);//each loop call the private load function (denoted by underscore)
+                //the parameter passed to the function is the url string value of the array index
+                //held within the 'url' variable
             });
         } else {
-            /* The developer did not pass an array to this function,
-             * assume the value is a string and call our image loader
-             * directly.
-             */
-            _load(urlOrArr);
+            
+            _load(urlOrArr);//call the private load function and pass it the string url held in the 
+            //urlOrArr valribale that was passed to the container function as a parameter
         }
     }
 
-    /* This is our private image loader function, it is
-     * called by the public image loader function.
-     */
+
+
+    //private load function denoted by preceding underscore
     function _load(url) {
         if(resourceCache[url]) {
             /* If this URL has been previously loaded it will exist within
@@ -46,6 +47,7 @@
              * within our cache; we'll need to load this image.
              */
             var img = new Image();
+
             img.onload = function() {
                 /* Once our image has properly loaded, add it to our cache
                  * so that we can simply return this image if the developer
@@ -66,7 +68,9 @@
              * the images src attribute to the passed in URL.
              */
             resourceCache[url] = false;
+            resourceCache[url].width = 20;
             img.src = url;
+
         }
     }
 
@@ -74,9 +78,33 @@
      * have been previously loaded. If an image is cached, this functions
      * the same as calling load() on that URL.
      */
-    function get(url) {
-        return resourceCache[url];
+    function get(url, dimension) {
+        switch(dimension) {
+            case 'app':
+                //console.log(resourceCache[url].width);
+                return resourceCache[url];
+                
+                break;
+            case 'height':
+                //console.log(resourceCache[url].height);
+                //return resourceCache[url].height;
+                break;
+            default:
+                //console.log(resourceCache[url].width);
+                return resourceCache[url];
+        }
     }
+
+    function getSpriteHeight(url) {
+        //return resourceCache[url].height;
+        console.log(url);
+        console.log(resourceCache);
+    }
+
+    function getSpriteWidth(url) {
+        //return resourceCache[url].width;
+    }
+
 
     /* This function determines if all of the images that have been requested
      * for loading have in fact been completed loaded.
@@ -86,26 +114,30 @@
         for(var k in resourceCache) {
             if(resourceCache.hasOwnProperty(k) &&
                !resourceCache[k]) {
-                ready = false;
+                ready = false; //if the array object has a property of the but has not indexed it yet
+                //then the image is not yet ready - -set as false.
             }
         }
-        return ready;
+        return ready;//returns either true or false depending on whether the image has loaded
     }
 
     /* This function will add a function to the callback stack that is called
      * when all requested images are properly loaded.
      */
-    function onReady(func) {
+    function onReady(func) { //called from engine.js and passed 'init' as a parameter
         readyCallbacks.push(func);
     }
 
-    /* This object defines the publicly accessible functions available to
-     * developers by creating a global Resources object.
-     */
-    window.Resources = {
-        load: load,
-        get: get,
-        onReady: onReady,
-        isReady: isReady
+
+    //create a Resources object based on the anonymous container function
+    //in this resources.js file that can be called from elsewhere (by prefixing the function with 
+    //object dot notation (i.e Resources.). Define the functions that are available on the public scope.
+    window.Resources = { //Resources object JSON
+        load: load, //load function
+        get: get,// get function
+        onReady: onReady, //onReady function
+        isReady: isReady, //isready function
+        getSpriteWidth: getSpriteWidth,
+        getSpriteHeight:getSpriteHeight
     };
 })();

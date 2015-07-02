@@ -1,11 +1,17 @@
 // Enemies our player must avoid
-var Enemy = function() {
+var Enemy = function(loc) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
+    this.x = loc[0];
+    this.y = loc[1];
+
     this.sprite = 'images/enemy-bug.png';
+
+    this.height = Resources.get(this.sprite,'height')
+    this.width = Resources.get(this.sprite,'width')
 }
 
 // Update the enemy's position, required method for game
@@ -18,19 +24,57 @@ Enemy.prototype.update = function(dt) {
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    ctx.drawImage(Resources.get(this.sprite,'app'), this.x, this.y);
 }
 
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
+var Player = function(loc) {
+    this.x = loc[0];
+    this.y= loc[1];
+    this.sprite = 'images/char-boy.png';
+    this.height = 88;
+    this.width = 67;
+}
 
+Player.prototype = {
+    update: function() {
 
+    },
+    render: function() {
+        ctx.drawImage(Resources.get(this.sprite,'app'), this.x, this.y);
+    },
+    handleInput: function(key) {
+        switch(key) {
+            case 'left':
+                if(this.x > 0 + this.width/2) 
+                    this.x -= blockWidth;//left command code
+                break;
+            case 'right':
+                if(this.x < 404 - this.width/2)
+                    this.x += blockWidth;//right command code
+                break;
+            case 'up':
+                this.y -= blockHeight;//up command code
+                break;
+            case 'down':
+                this.y += blockHeight;//down commad code
+                break;
+            default:
+        }
+        console.log('x:' + this.x + '; ' + 'y:' + this.y)
+    },
+    move: function() {
+
+    }
+};
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-
-
+var allEnemies = []
+allEnemies.push(new Enemy([-20,100]));
+var player = new Player([300,83]);
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
