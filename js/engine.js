@@ -94,6 +94,8 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
+        console.log(dt);
+        enemies(dt);
         player.update();
     }
 
@@ -189,6 +191,5 @@ var Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
-    global.blockWidth = 101;
-    global.blockHeight = 83;
+    
 })(this);
