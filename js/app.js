@@ -65,6 +65,8 @@ var Player = function() {
 
 Player.prototype = {
     update: function() {
+        scoreHTML.innerHTML = 'Score: ' + score;
+        livesHTML.innerHTML = 'Lives: ' + lives;
     },
     render: function() {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
@@ -84,6 +86,10 @@ Player.prototype = {
                     this.y -= blockHeight;//up command code
                     this.row--;
                 }
+                else {
+                    score += 100;
+                    player.reset('success');
+                }
                 break;
             case 'down':
                 if(this.y !== this.lowerBound) {
@@ -93,9 +99,22 @@ Player.prototype = {
                 break;
             default:
         }
-    console.log('x:' + this.x + '; y:' + this.y + '; row: ' + this.row);
+    },
+    reset: function(outcome) {//called when collision or success happens
+        createPlayer();
     }
 };
+
+//var lastFire = Date.now();
+var gameTime = 0;
+var isGameOver;
+var terrainPattern;
+
+// The score
+var lives = 3;
+var score = 0;
+var scoreHTML = document.getElementById('score');
+var livesHTML = document.getElementById('lives');
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;

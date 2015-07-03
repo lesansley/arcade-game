@@ -64,8 +64,12 @@ var Engine = (function(global) {
      * game loop.
      */
     function init() {
+        
+        document.getElementById('play-again').addEventListener('click', function() {
+            reset();
+        });
+        
         reset();
-
         lastTime = Date.now();
         main();
     }
@@ -101,6 +105,7 @@ var Engine = (function(global) {
         player.update();
     }
 
+    //loop through allEnemies and remove the objects that have been marked left the canvas
     function removeEntities() {
         for(var enemy in allEnemies) {
             if (allEnemies[enemy].toRemove) {
@@ -117,8 +122,8 @@ var Engine = (function(global) {
             if(allEnemies[enemy].row === player.row) {
                 collision = boxCollides(allEnemies[enemy].x, allEnemies[enemy].width, player.x, player.width);
                 if(collision) {
-                    player.x = 0;
-                    player.y = 0;
+                    lives--;
+                    gameOver(lives);
                     allEnemies.splice(enemy,1);
                 }
             }
@@ -166,23 +171,14 @@ var Engine = (function(global) {
          */
         for (row = 0; row < numRows; row++) {
             for (col = 0; col < numCols; col++) {
-                /* The drawImage function of the canvas' context element
-                 * requires 3 parameters: the image to draw, the x coordinate
-                 * to start drawing and the y coordinate to start drawing.
-                 * We're using our Resources helpers to refer to our images
-                 * so that we get the benefits of caching these images, since
-                 * we're using them over and over.
-                 */
 
-                //the get function is used insted of just passing the url or array value
+                //the get function is used instead of just passing the url or array value
                 //in order that the cached image is presented 
                 //and not a new load of the image, which has perfromance implications.
 
                 ctx.drawImage(Resources.get(rowImages[row]), col * blockWidth, row * blockHeight); 
             }
         }
-
-
         renderEntities();
     }
 
@@ -191,24 +187,34 @@ var Engine = (function(global) {
      * on your enemy and player entities within app.js
      */
     function renderEntities() {
-        /* Loop through all of the objects within the allEnemies array and call
-         * the render function you have defined.
-         */
-         player.render();
 
+        player.render();
+
+        //loop through allEnemies and render each enemy object in the array
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
-
-        
     }
 
-    /* This function does nothing but it could have been a good place to
-     * handle game reset states - maybe a new game menu or a game over screen
-     * those sorts of things. It's only called once by the init() method.
-     */
+    function gameOver(remainingLives) {
+        if(remainingLives===0) {
+            document.getElementById('game-over').style.display = 'block';
+            document.getElementById('game-over-overlay').style.display = 'block';
+            isGameOver = true;
+        }
+        else {
+            player.reset();
+        }
+    }
+
+    //Handle game reset states
+    //It's only called once by the init() method.
     function reset() {
-        // noop
+        document.getElementById('game-over').style.display = 'none';
+        document.getElementById('game-over-overlay').style.display = 'none';
+        isGameOver = false;
+        gameTime = 0;
+        score = 0;
     }
 
     //Pre-loads all the images required for the game.
