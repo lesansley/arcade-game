@@ -49,27 +49,33 @@ Enemy.prototype = {
 var avatar = [
     {
         name:'boy',
-        width:88,
-        height:67,
+        width:67,
+        height:88,
         url:'images/char-boy.png'
     },
     {
         name:'princess',
-        width:88,
-        height:67,
+        width:75,
+        height:99,
         url:'images/char-princess-girl.png'
     },
     {
         name:'horn-girl',
-        width:88,
-        height:67,
+        width:77,
+        height:90,
         url:'images/char-horn-girl.png'
     },
     {
         name:'cat-girl',
-        width:88,
-        height:67,
+        width:68,
+        height:90,
         url:'images/char-cat-girl.png'
+    },
+    {
+        name:'pink-girl',
+        width:76,
+        height:89,
+        url:'images/char-pink-girl.png'
     }
 ];
 
@@ -81,7 +87,6 @@ Player = function(avatarIndex) {
     this.width = avatar[avatarIndex].width;
     
     this.sprite = avatar[avatarIndex].url;
-    
     this.row = 5;
     //set the start co-ordinates to the middle of the square. Assign a random column
     this.x = blockWidth*3 - blockWidth/2 - this.width/2;
@@ -163,7 +168,7 @@ var enemies = function() {
 }
 
 var createPlayer = function() {
-    player = new Player(0);
+    player = new Player(1);
 }
 
 createPlayer();
