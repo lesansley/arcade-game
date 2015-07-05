@@ -69,19 +69,11 @@ var Engine = (function(global) {
         main();
     }
 
-    /* This function is called by main (our game loop) and itself calls all
-     * of the functions which may need to update entity's data. Based on how
-     * you implement your collision detection (when two entities occupy the
-     * same space, for instance when your character should die), you may find
-     * the need to add an additional function call here. For now, we've left
-     * it commented out - you may or may not want to implement this
-     * functionality this way (you could just implement collision detection
-     * on the entities themselves within your app.js file).
-     */
     function update(dt) {
         updateEntities(dt);
         checkCollisions();
         removeEntities();
+        gameStatus();
     }
 
     /* This is called by the update function  and loops through all of the
@@ -110,7 +102,6 @@ var Engine = (function(global) {
     }
 
     function checkCollisions() {
-
         var collision = false;
         for(var enemy in allEnemies) {
             if(allEnemies[enemy].row === player.row) {
@@ -211,7 +202,6 @@ var Engine = (function(global) {
         createPlayerIndex();
         createPlayer();
         isGameOver = false;
-        gameTime = 0;
         score = 0;
         lives = 3;
     }
@@ -219,8 +209,8 @@ var Engine = (function(global) {
     //Pre-loads all the images required for the game.
     //The load function is called from the resources file.
     //sends the array to the function in resources.js
-    Resources.load([
-        'images/stone-block.png',//101x123
+    Resources.load(loadImages());
+        /*'images/stone-block.png',//101x123
         'images/water-block.png',//101x120
         'images/grass-block.png',//101x131
         'images/enemy-bug.png',//99x77
@@ -228,9 +218,12 @@ var Engine = (function(global) {
         'images/char-horn-girl.png',
         'images/char-pink-girl.png',
         'images/char-princess-girl.png',
-        'images/char-cat-girl.png'
-
-    ]);
+        'images/char-cat-girl.png',
+        'images/Star.png',
+        'images/Rock.png',
+        'images/Heart.png',
+        'images/Key.png',
+        'images/Selector.png'*/
     Resources.onReady(init);
 
     document.getElementById('play-again').addEventListener('click', function() {

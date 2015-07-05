@@ -3,6 +3,11 @@
 var blockWidth = 101;
 var blockHeight = 83;
 var playerIndex;
+var lives;
+var score;
+var isGameOver;
+var allEnemies = [];
+var allImages = [];
     
 // Enemies our player must avoid
 var Enemy = function() {
@@ -47,47 +52,87 @@ Enemy.prototype = {
     }
 };
 
-var avatar = [
-    {
-        name:'boy',
-        width:67,
-        height:88,
-        url:'images/char-boy.png'
-    },
-    {
-        name:'princess',
-        width:75,
-        height:99,
-        url:'images/char-princess-girl.png'
-    },
-    {
-        name:'horn-girl',
-        width:77,
-        height:90,
-        url:'images/char-horn-girl.png'
-    },
-    {
-        name:'cat-girl',
-        width:68,
-        height:90,
-        url:'images/char-cat-girl.png'
-    },
-    {
-        name:'pink-girl',
-        width:76,
-        height:89,
-        url:'images/char-pink-girl.png'
+var images = {
+    'avatar':[
+        {
+            name:'boy',
+            width:67,
+            height:88,
+            url:'images/char-boy.png'
+        },
+        {
+            name:'princess',
+            width:75,
+            height:99,
+            url:'images/char-princess-girl.png'
+        },
+        {
+            name:'horn-girl',
+            width:77,
+            height:90,
+            url:'images/char-horn-girl.png'
+        },
+        {
+            name:'cat-girl',
+            width:68,
+            height:90,
+            url:'images/char-cat-girl.png'
+        },
+        {
+            name:'pink-girl',
+            width:76,
+            height:89,
+            url:'images/char-pink-girl.png'
+        }
+    ],
+    'background': [
+        {
+            name:'stone-block',
+            width:101,
+            height:123,
+            url:'images/stone-block.png'
+        },
+        {
+            name:'grass-block',
+            width:101,
+            height:131,
+            url:'images/grass-block.png'
+        },
+        {
+            name:'water-block',
+            width:101,
+            height:120,
+            url:'images/water-block.png'
+        }
+    ],
+    'enemy': [
+        {
+            name:'enemy-bug',
+            width:99,
+            height:77,
+            url:'images/enemy-bug.png'
+        }
+    ]
+};
+
+var loadImages = function() {
+    for(var pics in images){
+        for(var i = 0; i < images[pics].length; i++) {
+            allImages.push(images[pics][i].url);
+        }
     }
-];
+    return allImages;
+    console.log(allImages);
+};
 
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
 Player = function(avatarIndex) {
-    this.height = avatar[avatarIndex].height;
-    this.width = avatar[avatarIndex].width;
+    this.height = images.avatar[avatarIndex].height;
+    this.width = images.avatar[avatarIndex].width;
     
-    this.sprite = avatar[avatarIndex].url;
+    this.sprite = images.avatar[avatarIndex].url;
     this.row = 5;
     //set the start co-ordinates to the middle of the square. Assign a random column
     this.x = blockWidth*3 - blockWidth/2 - this.width/2;
@@ -102,8 +147,7 @@ Player = function(avatarIndex) {
 
 Player.prototype = {
     update: function() {
-        scoreHTML.innerHTML = score;
-        livesHTML.innerHTML = lives;
+
     },
     render: function() {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
@@ -142,44 +186,34 @@ Player.prototype = {
     }
 };
 
-var gameTime = 0;
-var isGameOver;
-
-//The game status
-var lives = 3;
-var score = 0;
-
-if(lives >=0) {
-    var scoreHTML = document.getElementById('score');
-    var livesHTML = document.getElementById('lives');
-}
-
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-// Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player
-var allEnemies = [];
+//Instantiate Enemny object and place all enemy objects in an array called allEnemies
 
 var enemies = function() {
     if(getRandomInt(1,1000)<20)
         allEnemies.push(new Enemy([-20,100]));
-}
+};
 
+//function to instantiate Player object in a variable called player
 var createPlayer = function() {
     player = new Player(playerIndex);
-}
+};
 
+//Randomise the Player avatar
 var createPlayerIndex = function() {
-    playerIndex = getRandomInt(0,5);
-}
+    playerIndex = getRandomInt(0,images.avatar.length);
+};
 
-//createPlayer();
+var gameStatus = function() {
+    var scoreHTML = document.getElementById('score');
+    var livesHTML = document.getElementById('lives');
+    scoreHTML.innerHTML = score;
+    livesHTML.innerHTML = lives;
+};
 
-if(!isGameOver)
-    enemies();
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
