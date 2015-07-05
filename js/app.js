@@ -2,6 +2,7 @@
 //declare global variables we will need
 var blockWidth = 101;
 var blockHeight = 83;
+var playerIndex;
     
 // Enemies our player must avoid
 var Enemy = function() {
@@ -168,10 +169,14 @@ var enemies = function() {
 }
 
 var createPlayer = function() {
-    player = new Player(1);
+    player = new Player(playerIndex);
 }
 
-createPlayer();
+var createPlayerIndex = function() {
+    playerIndex = getRandomInt(0,5);
+}
+
+//createPlayer();
 
 if(!isGameOver)
     enemies();

@@ -208,6 +208,8 @@ var Engine = (function(global) {
     //It's only called once by the init() method.
     function reset() {
         document.getElementById('game-over').style.display = 'none';
+        createPlayerIndex();
+        createPlayer();
         isGameOver = false;
         gameTime = 0;
         score = 0;
