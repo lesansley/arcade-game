@@ -27,7 +27,7 @@ var Engine = (function(global) {
 
     canvas.width = 505;
     canvas.height = 606;
-    doc.body.appendChild(canvas);//add to DOM
+    $('#canvas').append(canvas);//add to DOM
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
@@ -64,11 +64,6 @@ var Engine = (function(global) {
      * game loop.
      */
     function init() {
-        
-        document.getElementById('play-again').addEventListener('click', function() {
-            reset();
-        });
-        
         reset();
         lastTime = Date.now();
         main();
@@ -115,16 +110,15 @@ var Engine = (function(global) {
     }
 
     function checkCollisions() {
+
         var collision = false;
-        //console.log('Set initial collision boolean: ' + collision);
         for(var enemy in allEnemies) {
-            //console.log('Loop through allEnemies[' + enemy + ']');
             if(allEnemies[enemy].row === player.row) {
                 collision = boxCollides(allEnemies[enemy].x, allEnemies[enemy].width, player.x, player.width);
                 if(collision) {
                     lives--;
-                    gameOver(lives);
                     allEnemies.splice(enemy,1);
+                    gameOver(lives);
                 }
             }
 
@@ -187,7 +181,6 @@ var Engine = (function(global) {
      * on your enemy and player entities within app.js
      */
     function renderEntities() {
-
         player.render();
 
         //loop through allEnemies and render each enemy object in the array
@@ -199,22 +192,26 @@ var Engine = (function(global) {
     function gameOver(remainingLives) {
         if(remainingLives===0) {
             document.getElementById('game-over').style.display = 'block';
-            document.getElementById('game-over-overlay').style.display = 'block';
             isGameOver = true;
+            setToRemove();
         }
-        else {
-            player.reset();
-        }
+        player.reset();
     }
 
+    function setToRemove() {
+        for(var enemy in allEnemies) {
+            allEnemies[enemy].toRemove = true;
+        }
+        removeEntities;
+    }
     //Handle game reset states
     //It's only called once by the init() method.
     function reset() {
         document.getElementById('game-over').style.display = 'none';
-        document.getElementById('game-over-overlay').style.display = 'none';
         isGameOver = false;
         gameTime = 0;
         score = 0;
+        lives = 3;
     }
 
     //Pre-loads all the images required for the game.
@@ -228,6 +225,10 @@ var Engine = (function(global) {
         'images/char-boy.png' //67x88
     ]);
     Resources.onReady(init);
+
+    document.getElementById('play-again').addEventListener('click', function() {
+            reset();
+        });
 
     /* Assign the canvas' context object to the global variable (the window
      * object when run in a browser) so that developer's can use it more easily

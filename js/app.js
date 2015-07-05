@@ -4,12 +4,7 @@ var blockWidth = 101;
 var blockHeight = 83;
     
 // Enemies our player must avoid
-var Enemy = function(loc) {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
-
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
+var Enemy = function() {
 
     this.sprite = 'images/enemy-bug.png';
 
@@ -22,11 +17,12 @@ var Enemy = function(loc) {
     
     this.speed = getRandomInt(100,600);
     this.toRemove = false;
-}
+};
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
-Enemy.prototype.update = function(dt) {
+Enemy.prototype = {
+    update: function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
@@ -35,38 +31,73 @@ Enemy.prototype.update = function(dt) {
     //if the entitiy has moved off the screen then change the toRemove property to true
     if(this.x > blockWidth * 5)
         this.toRemove = true;
-}
+    },
+    // Draw the enemy on the screen, required method for game
+    render: function() {
+    if(!isGameOver)
+        ctx.drawImage(Resources.get(this.sprite,'app'), this.x, this.y);
+    },
+    reset: function() {
+        for(var enemy in allEnemies) {
+            allEnemies(enemy).toRemove=true;
+            console.log("all enemies set to remove");
+        }
 
-// Draw the enemy on the screen, required method for game
-Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite,'app'), this.x, this.y);
-}
+    }
+};
+
+var avatar = [
+    {
+        name:'boy',
+        width:88,
+        height:67,
+        url:'images/char-boy.png'
+    },
+    {
+        name:'princess',
+        width:88,
+        height:67,
+        url:'images/char-princess-girl.png'
+    },
+    {
+        name:'horn-girl',
+        width:88,
+        height:67,
+        url:'images/char-horn-girl.png'
+    },
+    {
+        name:'cat-girl',
+        width:88,
+        height:67,
+        url:'images/char-cat-girl.png'
+    }
+];
 
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
-var Player = function() {
-    this.height = 88;
-    this.width = 67;
+Player = function(avatarIndex) {
+    this.height = avatar[avatarIndex].height;
+    this.width = avatar[avatarIndex].width;
     
-    this.sprite = 'images/char-boy.png';
+    this.sprite = avatar[avatarIndex].url;
     
-    //set the start co-ordinates to the middle of the square. Assign a random column
     this.row = 5;
-    this.x = blockWidth*getRandomInt(1,6) - blockWidth/2 - this.width/2;
-    this.y = blockHeight*this.row - blockHeight/2 - this.height/2;
+    //set the start co-ordinates to the middle of the square. Assign a random column
+    this.x = blockWidth*3 - blockWidth/2 - this.width/2;
+    this.y = blockHeight*5 - blockHeight/2 - this.height/2;
 
     //define the playing area based on size of sprite
     this.upperBound = blockHeight*2 - blockHeight/2 - this.height/2;
-    this.lowerBound = blockHeight*4 - blockHeight/2 - this.height/2;
+    this.lowerBound = blockHeight*3 - blockHeight/2 - this.height/2;
     this.leftBound = blockWidth*1 - blockWidth/2 - this.width/2;
     this.rightBound = blockWidth*5 - blockWidth/2 - this.width/2;
 }
 
 Player.prototype = {
     update: function() {
-        scoreHTML.innerHTML = 'Score: ' + score;
-        livesHTML.innerHTML = 'Lives: ' + lives;
+        scoreHTML.innerHTML = score;
+        livesHTML.innerHTML = lives;
     },
     render: function() {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
@@ -92,7 +123,7 @@ Player.prototype = {
                 }
                 break;
             case 'down':
-                if(this.y !== this.lowerBound) {
+                if(this.y <= this.lowerBound) {
                     this.y += blockHeight;//down command code
                     this.row++;
                 }
@@ -105,16 +136,17 @@ Player.prototype = {
     }
 };
 
-//var lastFire = Date.now();
 var gameTime = 0;
 var isGameOver;
-var terrainPattern;
 
-// The score
+//The game status
 var lives = 3;
 var score = 0;
-var scoreHTML = document.getElementById('score');
-var livesHTML = document.getElementById('lives');
+
+if(lives >=0) {
+    var scoreHTML = document.getElementById('score');
+    var livesHTML = document.getElementById('lives');
+}
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -124,17 +156,20 @@ function getRandomInt(min, max) {
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 var allEnemies = [];
+
 var enemies = function() {
     if(getRandomInt(1,1000)<20)
         allEnemies.push(new Enemy([-20,100]));
 }
 
 var createPlayer = function() {
-    player = new Player();
+    player = new Player(0);
 }
 
 createPlayer();
-enemies();
+
+if(!isGameOver)
+    enemies();
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
@@ -144,6 +179,6 @@ document.addEventListener('keyup', function(e) {
         39: 'right',
         40: 'down'
     };
-
-    player.handleInput(allowedKeys[e.keyCode]);
+    if(!isGameOver)
+        player.handleInput(allowedKeys[e.keyCode]);
 });

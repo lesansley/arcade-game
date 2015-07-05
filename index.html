@@ -6,9 +6,13 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-	 <div id="game-over-overlay">
+  <div id="status">
+    <span class="status-feed">Score: </span><span id="score"></span>
+    <span class="status-feed">Lives remaining: </span><span id="lives"></span>
+  </div>
+  <div id="canvas"></div>
+	<div id="game-over-overlay">
     </div>
-
     <div id="game-over">
       <h1>GAME OVER</h1>
       <button id="play-again">Play Again</button>
@@ -24,8 +28,7 @@
         </div>
       </div>
 
-      <div id="score"></div>
-      <div id="lives"></div>
+      
     </div>
 
 	<script src="js/jQuery.js"></script>
