@@ -1,3 +1,10 @@
 body {
     text-align: center;
 }
+.status-feed {
+	font-weight: bold;
+}
+
+.no-margin {
+	margin: 0;
+}
