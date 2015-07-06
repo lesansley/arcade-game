@@ -5,6 +5,7 @@ var blockHeight = 83;
 var playerIndex;
 var lives;
 var score;
+var crossing;
 var isGameOver;
 var allEnemies = [];
 var allImages = [];
@@ -119,7 +120,10 @@ var Enemy = function(enemyIndex) {
     this.y = blockHeight*this.row - blockHeight/2 - this.height/2;
     
     //*****STILL NEED TO ADJUST SPEED BASED ON LEVEL*******
-    this.speed = getRandomInt(100,600);
+    var lowerSpeed = 100 * Math.pow(crossing+1, 0.3);
+    var upperSpeed = 300 * Math.pow(crossing+1, 0.4);
+
+    this.speed = getRandomInt(lowerSpeed,upperSpeed);
     this.toRemove = false;
 };
 
@@ -204,6 +208,7 @@ Player.prototype = {
                 }
                 else {
                     score += 100;
+                    crossing +=1;
                     player.reset('success');
                 }
                 break;
@@ -240,11 +245,6 @@ var createPlayer = function() {
 //Randomise the Player avatar
 var createPlayerIndex = function() {
     playerIndex = getRandomInt(0,images.avatar.length);
-};
-
-//++++++REMOVE++++++++
-var gameStatus = function() {
-
 };
 
 // This listens for key presses and sends the keys to your

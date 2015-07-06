@@ -73,7 +73,6 @@ var Engine = (function(global) {
         updateEntities(dt);
         checkCollisions();
         removeEntities();
-        gameStatus();
     }
 
     /* This is called by the update function  and loops through all of the
@@ -174,9 +173,6 @@ var Engine = (function(global) {
         var scoreText = 'Score: ' + score;
         var livesText = 'Lives: ' + lives;
         var instructionText = 'Move player with arrows';
-        var scoreMeasure = ctx.measureText(scoreText);
-        var livesMeasure = ctx.measureText(livesText);
-        var instructionMeasure = ctx.measureText(instructionText);
         
         ctx.font = '900 40px Orbitron';
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
@@ -185,19 +181,19 @@ var Engine = (function(global) {
         if(lives===1)
             ctx.fillStyle = 'rgba(196, 30, 0, 0.5)';
         ctx.fillText('Lives: ' + lives, 318, blockHeight/2 + 40/2);
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-        ctx.font = '100 30px Orbitron';
 
         if(isGameOver){
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
             ctx.fillRect(0,0,canvas.width,canvas.height);
             ctx.font = '900 120px Orbitron';
-            ctx.fillStyle = 'rgba(0, 0, 1)'
-            ctx.fillText('GAME',canvas.width/2-ctx.measureText('GAME').width/2, canvas.height-canvas.height/1.5);
-            ctx.fillText('OVER',canvas.width/2-ctx.measureText('OVER').width/2, canvas.height-canvas.height/2.3);
+            ctx.fillStyle = 'rgba(0, 0, 1)';
+            ctx.fillText('GAME',canvas.width/2 - ctx.measureText('GAME').width/2, canvas.height - canvas.height/1.5);
+            ctx.fillText('OVER',canvas.width/2 - ctx.measureText('OVER').width/2, canvas.height - canvas.height/2.3);
         }
         else {
-            ctx.fillText(instructionText,43, canvas.height-15);
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+            ctx.font = '100 30px Orbitron';
+            ctx.fillText(instructionText,canvas.width/2 - ctx.measureText(instructionText).width/2, canvas.height - 15);
         }
     }
 
@@ -218,7 +214,6 @@ var Engine = (function(global) {
         if(remainingLives===0) {
             document.getElementById('game-over').style.display = 'block';
             isGameOver = true;
-            setToRemove();
         }
         player.reset();
     }
@@ -227,7 +222,6 @@ var Engine = (function(global) {
         for(var enemy in allEnemies) {
             allEnemies[enemy].toRemove = true;
         }
-        removeEntities;
     }
     //Handle game reset states
     //It's only called once by the init() method.
@@ -235,9 +229,13 @@ var Engine = (function(global) {
         document.getElementById('game-over').style.display = 'none';
         createPlayerIndex();
         createPlayer();
+        setToRemove();
+        removeEntities();
         isGameOver = false;
+        enemies();
         score = 0;
         lives = 3;
+        crossing = 0;
     }
 
     //Pre-loads all the images required for the game.
