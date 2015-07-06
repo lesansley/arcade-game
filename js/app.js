@@ -76,25 +76,29 @@ var images = {
             name:'star',
             width:100,
             height:100,
-            url:'images/Star.png'
+            url:'images/Star.png',
+            points: 25
         },
         {
             name:'rock',
             width:98,
             height:98,
-            url:'images/Rock.png'
+            url:'images/Rock.png',
+            points: 40
         },
         {
             name:'heart',
             width:89,
             height:90,
-            url:'images/Heart.png'
+            url:'images/Heart.png',
+            points: 10
         },
         {
             name:'key',
             width:58,
             height:98,
-            url:'images/Key.png'
+            url:'images/Key.png',
+            points: 30
         }
     ],
     'dynamicModifiers': [
@@ -103,6 +107,7 @@ var images = {
             width:101,
             height:171,
             url:'images/Selector.png'
+            points: 200,
         }
     ]
 };
@@ -154,6 +159,7 @@ Enemy.prototype = {
     }
 };
 
+
 var loadImages = function() {
     for(var pics in images){
         for(var i = 0; i < images[pics].length; i++) {
@@ -164,6 +170,30 @@ var loadImages = function() {
     console.log(allImages);
 };
 
+StaticPrize = function(prizeIndex) {
+    this.height = images.staticModifiers[prizeIndex].height;
+    this.width = images.staticModifiers[prizeIndex].width;
+    this.sprite = images.staticModifiers[prizeIndex].url;
+    this.points = images.staticModifiers[prizeIndex].points;
+
+    this.row = getRandomInt(2,5);
+    this.column = getRandomInt(1,6);
+
+    this.x = blockWidth*this.column - blockWidth/2 - this.width/2;
+    this.y = blockWidth*this.row - blockWidth/2 - this.width/2;
+};
+
+StaticPrize.prototype = {
+    update: function() {
+
+    },
+    render: function() {
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    },
+    reset: function() {
+
+    }
+};
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
@@ -232,6 +262,7 @@ function getRandomInt(min, max) {
 
 //Instantiate Enemny object and place all enemy objects in an array called allEnemies
 
+
 var enemies = function() {
     if(getRandomInt(1,1000)<20)
         allEnemies.push(new Enemy(0,images.enemy.length));
@@ -241,6 +272,10 @@ var enemies = function() {
 var createPlayer = function() {
     player = new Player(playerIndex);
 };
+
+var createStaticPrizeIndex = function() {
+
+}
 
 //Randomise the Player avatar
 var createPlayerIndex = function() {
