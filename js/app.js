@@ -9,6 +9,7 @@ var crossing;
 var isGameOver;
 var allEnemies = [];
 var allImages = [];
+var allStaticPrizes = [];
 
 var images = {
     'avatar':[
@@ -106,8 +107,8 @@ var images = {
             name:'selector',//Make move like enemy but get points
             width:101,
             height:171,
-            url:'images/Selector.png'
-            points: 200,
+            url:'images/Selector.png',
+            points: 200
         }
     ]
 };
@@ -180,18 +181,29 @@ StaticPrize = function(prizeIndex) {
     this.column = getRandomInt(1,6);
 
     this.x = blockWidth*this.column - blockWidth/2 - this.width/2;
-    this.y = blockWidth*this.row - blockWidth/2 - this.width/2;
+    this.y = blockHeight*this.row - blockHeight/2 - this.height/2;
+
+    this.blink = true;
+    this.timeStamp = Date.now();
 };
 
 StaticPrize.prototype = {
     update: function() {
-
+        if(Date.now()-this.timeStamp>150) {
+            this.blink = !this.blink;
+            this.timeStamp = Date.now();
+        }
     },
     render: function() {
-        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+        if(this.blink)
+            ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     },
     reset: function() {
 
+    },
+    status: function() {
+        //put in a blink function
+        
     }
 };
 // Now write your own player class
@@ -265,7 +277,7 @@ function getRandomInt(min, max) {
 
 var enemies = function() {
     if(getRandomInt(1,1000)<20)
-        allEnemies.push(new Enemy(0,images.enemy.length));
+        allEnemies.push(new Enemy(getRandomInt(0,images.enemy.length)));
 };
 
 //function to instantiate Player object in a variable called player
@@ -273,9 +285,14 @@ var createPlayer = function() {
     player = new Player(playerIndex);
 };
 
-var createStaticPrizeIndex = function() {
+var staticPrizes = function() {
+    if(getRandomInt(1,1000)<2)
+        allStaticPrizes.push(new StaticPrize(getRandomInt(0,images.staticModifiers.length)));
+};
 
-}
+var createStaticPrizeIndex = function() {
+    staticPrizeIndex = getRandomInt(0,images.avatar.length);
+};
 
 //Randomise the Player avatar
 var createPlayerIndex = function() {

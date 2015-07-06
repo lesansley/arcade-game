@@ -83,12 +83,16 @@ var Engine = (function(global) {
      * render methods.
      */
     function updateEntities(dt) {
-        var i=0;
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
-        enemies(dt);
-        player.update();
+        
+        enemies();
+        staticPrizes();
+        
+        allStaticPrizes.forEach(function(prize) {
+            prize.update();
+        });
     }
 
     //loop through allEnemies and remove the objects that have been marked left the canvas
@@ -202,6 +206,11 @@ var Engine = (function(global) {
      * on your enemy and player entities within app.js
      */
     function renderEntities() {
+        
+        allStaticPrizes.forEach(function(prize) {
+            prize.render();
+        });
+
         player.render();
 
         //loop through allEnemies and render each enemy object in the array
