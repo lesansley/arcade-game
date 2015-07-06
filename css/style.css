@@ -8,3 +8,8 @@ body {
 .no-margin {
 	margin: 0;
 }
+
+.bigbutton {
+	width: 150px;
+	height: 66px;
+} 

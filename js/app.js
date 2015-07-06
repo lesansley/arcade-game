@@ -8,49 +8,6 @@ var score;
 var isGameOver;
 var allEnemies = [];
 var allImages = [];
-    
-// Enemies our player must avoid
-var Enemy = function() {
-
-    this.sprite = 'images/enemy-bug.png';
-
-    this.height = 77;
-    this.width = 99;
-    
-    this.row = getRandomInt(2,5);
-    this.x = -1 * this.width;
-    this.y = blockHeight*this.row - blockHeight/2 - this.height/2;
-    
-    this.speed = getRandomInt(100,600);
-    this.toRemove = false;
-};
-
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
-Enemy.prototype = {
-    update: function(dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
-    this.x += this.speed * dt;
-
-    //if the entitiy has moved off the screen then change the toRemove property to true
-    if(this.x > blockWidth * 5)
-        this.toRemove = true;
-    },
-    // Draw the enemy on the screen, required method for game
-    render: function() {
-    if(!isGameOver)
-        ctx.drawImage(Resources.get(this.sprite,'app'), this.x, this.y);
-    },
-    reset: function() {
-        for(var enemy in allEnemies) {
-            allEnemies(enemy).toRemove=true;
-            console.log("all enemies set to remove");
-        }
-
-    }
-};
 
 var images = {
     'avatar':[
@@ -112,7 +69,85 @@ var images = {
             height:77,
             url:'images/enemy-bug.png'
         }
+    ],
+    'staticModifiers': [
+        {
+            name:'star',
+            width:100,
+            height:100,
+            url:'images/Star.png'
+        },
+        {
+            name:'rock',
+            width:98,
+            height:98,
+            url:'images/Rock.png'
+        },
+        {
+            name:'heart',
+            width:89,
+            height:90,
+            url:'images/Heart.png'
+        },
+        {
+            name:'key',
+            width:58,
+            height:98,
+            url:'images/Key.png'
+        }
+    ],
+    'dynamicModifiers': [
+        {
+            name:'selector',//Make move like enemy but get points
+            width:101,
+            height:171,
+            url:'images/Selector.png'
+        }
     ]
+};
+
+// Enemies our player must avoid
+var Enemy = function(enemyIndex) {
+
+    this.sprite = images.enemy[enemyIndex].url;
+
+    this.height = images.enemy[enemyIndex].height;
+    this.width = images.enemy[enemyIndex].width;
+    
+    this.row = getRandomInt(2,5);
+    this.x = -1 * this.width;
+    this.y = blockHeight*this.row - blockHeight/2 - this.height/2;
+    
+    //*****STILL NEED TO ADJUST SPEED BASED ON LEVEL*******
+    this.speed = getRandomInt(100,600);
+    this.toRemove = false;
+};
+
+// Update the enemy's position, required method for game
+// Parameter: dt, a time delta between ticks
+Enemy.prototype = {
+    update: function(dt) {
+    // You should multiply any movement by the dt parameter
+    // which will ensure the game runs at the same speed for
+    // all computers.
+    this.x += this.speed * dt;
+
+    //if the entitiy has moved off the screen then change the toRemove property to true
+    if(this.x > blockWidth * 5)
+        this.toRemove = true;
+    },
+    // Draw the enemy on the screen, required method for game
+    render: function() {
+    if(!isGameOver)
+        ctx.drawImage(Resources.get(this.sprite,'app'), this.x, this.y);
+    },
+    reset: function() {
+        for(var enemy in allEnemies) {
+            allEnemies(enemy).toRemove=true;
+            console.log("all enemies set to remove");
+        }
+
+    }
 };
 
 var loadImages = function() {
@@ -143,7 +178,7 @@ Player = function(avatarIndex) {
     this.lowerBound = blockHeight*3 - blockHeight/2 - this.height/2;
     this.leftBound = blockWidth*1 - blockWidth/2 - this.width/2;
     this.rightBound = blockWidth*5 - blockWidth/2 - this.width/2;
-}
+};
 
 Player.prototype = {
     update: function() {
@@ -194,7 +229,7 @@ function getRandomInt(min, max) {
 
 var enemies = function() {
     if(getRandomInt(1,1000)<20)
-        allEnemies.push(new Enemy([-20,100]));
+        allEnemies.push(new Enemy(0,images.enemy.length));
 };
 
 //function to instantiate Player object in a variable called player
@@ -207,11 +242,9 @@ var createPlayerIndex = function() {
     playerIndex = getRandomInt(0,images.avatar.length);
 };
 
+//++++++REMOVE++++++++
 var gameStatus = function() {
-    var scoreHTML = document.getElementById('score');
-    var livesHTML = document.getElementById('lives');
-    scoreHTML.innerHTML = score;
-    livesHTML.innerHTML = lives;
+
 };
 
 // This listens for key presses and sends the keys to your

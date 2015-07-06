@@ -26,7 +26,7 @@ var Engine = (function(global) {
         lastTime;
 
     canvas.width = 505;
-    canvas.height = 606;
+    canvas.height = 548;
     $('#canvas').append(canvas);//add to DOM
 
     /* This function serves as the kickoff point for the game loop itself
@@ -161,10 +161,44 @@ var Engine = (function(global) {
                 //in order that the cached image is presented 
                 //and not a new load of the image, which has perfromance implications.
 
-                ctx.drawImage(Resources.get(rowImages[row]), col * blockWidth, row * blockHeight); 
+                ctx.drawImage(Resources.get(rowImages[row]), col * blockWidth, row * blockHeight);
             }
         }
+        
         renderEntities();
+        renderCanvasText();
+        
+    }
+
+    function renderCanvasText() {
+        var scoreText = 'Score: ' + score;
+        var livesText = 'Lives: ' + lives;
+        var instructionText = 'Move player with arrows';
+        var scoreMeasure = ctx.measureText(scoreText);
+        var livesMeasure = ctx.measureText(livesText);
+        var instructionMeasure = ctx.measureText(instructionText);
+        
+        ctx.font = '900 40px Orbitron';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        
+        ctx.fillText(scoreText, 5, blockHeight/2 + 40/2);
+        if(lives===1)
+            ctx.fillStyle = 'rgba(196, 30, 0, 0.5)';
+        ctx.fillText('Lives: ' + lives, 318, blockHeight/2 + 40/2);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+        ctx.font = '100 30px Orbitron';
+
+        if(isGameOver){
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'
+            ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.font = '900 120px Orbitron';
+            ctx.fillStyle = 'rgba(0, 0, 1)'
+            ctx.fillText('GAME',canvas.width/2-ctx.measureText('GAME').width/2, canvas.height-canvas.height/1.5);
+            ctx.fillText('OVER',canvas.width/2-ctx.measureText('OVER').width/2, canvas.height-canvas.height/2.3);
+        }
+        else {
+            ctx.fillText(instructionText,43, canvas.height-15);
+        }
     }
 
     /* This function is called by the render function and is called on each game
@@ -210,20 +244,7 @@ var Engine = (function(global) {
     //The load function is called from the resources file.
     //sends the array to the function in resources.js
     Resources.load(loadImages());
-        /*'images/stone-block.png',//101x123
-        'images/water-block.png',//101x120
-        'images/grass-block.png',//101x131
-        'images/enemy-bug.png',//99x77
-        'images/char-boy.png', //67x88
-        'images/char-horn-girl.png',
-        'images/char-pink-girl.png',
-        'images/char-princess-girl.png',
-        'images/char-cat-girl.png',
-        'images/Star.png',
-        'images/Rock.png',
-        'images/Heart.png',
-        'images/Key.png',
-        'images/Selector.png'*/
+        
     Resources.onReady(init);
 
     document.getElementById('play-again').addEventListener('click', function() {
