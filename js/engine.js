@@ -184,6 +184,12 @@ var Engine = (function(global) {
         renderCanvasText();
         ctx.fillStyle = 'white';
         ctx.fillRect(blockWidth*blockColumns,0, blockWidth, canvas.height);
+        for(var i = 0; i < images.staticModifiers.length; i++) {
+            ctx.drawImage(Resources.get(images.staticModifiers[i].url), canvas.width - blockWidth/2 - images.staticModifiers[i].width/2, (i+1) * blockHeight + blockHeight/2 - images.staticModifiers[i].height/2);
+            ctx.fillStyle='rgba(0,0,0,.75)';
+            ctx.fillText(images.staticModifiers[i].points, canvas.width - blockWidth/2 - images.staticModifiers[i].width/2, (i+1) * blockHeight + blockHeight/2);
+            console.log(images.staticModifiers[i].points);
+        }
         
     }
 
@@ -243,7 +249,7 @@ var Engine = (function(global) {
             document.getElementById('game-over').style.display = 'block';
             isGameOver = true;
         }
-        player.reset();
+        player.reset(player.index);
     }
 
     function setToRemove() {
@@ -255,7 +261,7 @@ var Engine = (function(global) {
     //It's only called once by the init() method.
     function reset() {
         document.getElementById('game-over').style.display = 'none';
-        createPlayer();
+        createPlayer(getRandomInt(0,images.avatar.length));
         setToRemove();
         removeEntities();
         isGameOver = false;

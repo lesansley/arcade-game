@@ -265,6 +265,8 @@ Player = function(avatarIndex) {
     this.lowerBound = blockHeight*3 - blockHeight/2 - this.height/2;
     this.leftBound = blockWidth - blockWidth/2 - this.width/2;
     this.rightBound = blockWidth*blockColumns - blockWidth/2 - this.width/2;
+
+    this.Index = avatarIndex;
 };
 
 Player.prototype = {
@@ -305,7 +307,7 @@ Player.prototype = {
         }
     },
     reset: function(outcome) {//called when collision or success happens
-        createPlayer();
+        createPlayer(this.Index);
     }
 };
 
@@ -322,8 +324,8 @@ var enemies = function() {
 };
 
 //function to instantiate Player object in a variable called player
-var createPlayer = function() {
-    player = new Player(getRandomInt(0,images.avatar.length));
+var createPlayer = function(index) {
+    player = new Player(index);
 };
 
 var staticPrizes = function() {

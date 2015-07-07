@@ -9,7 +9,8 @@ body {
 	margin: 0;
 }
 
-.bigbutton {
+.play-button {
 	width: 150px;
 	height: 66px;
+	padding-right: 101px;
 } 
