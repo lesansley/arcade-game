@@ -1,15 +1,17 @@
 
 //declare global variables we will need
-var blockWidth = 101;
-var blockHeight = 83;
-var playerIndex;
-var lives;
-var score;
-var crossing;
-var isGameOver;
-var allEnemies = [];
-var allImages = [];
-var allStaticPrizes = [];
+var blockWidth = 101,
+    blockHeight = 83,
+    blockColumns = 5,
+    playerIndex,
+    lives,
+    score,
+    crossing,
+    isGameOver,
+    allEnemies = [],
+    allImages = [],
+    allStaticPrizes = [],
+    allObstacles = [];
 
 var images = {
     'avatar':[
@@ -75,31 +77,24 @@ var images = {
     'staticModifiers': [
         {
             name:'star',
-            width:100,
-            height:100,
+            width:50,
+            height:50,
             url:'images/Star.png',
-            points: 25
-        },
-        {
-            name:'rock',
-            width:98,
-            height:98,
-            url:'images/Rock.png',
-            points: 40
+            points: 100
         },
         {
             name:'heart',
-            width:89,
-            height:90,
+            width:49,
+            height:50,
             url:'images/Heart.png',
-            points: 10
+            points: 35
         },
         {
             name:'key',
-            width:58,
-            height:98,
+            width:30,
+            height:50,
             url:'images/Key.png',
-            points: 30
+            points: 50
         }
     ],
     'dynamicModifiers': [
@@ -109,6 +104,15 @@ var images = {
             height:171,
             url:'images/Selector.png',
             points: 200
+        }
+    ],
+    'obstacles': [
+        {
+            name:'rock',
+            width:98,
+            height:98,
+            url:'images/Rock.png',
+            points: 40
         }
     ]
 };
@@ -124,6 +128,8 @@ var Enemy = function(enemyIndex) {
     this.row = getRandomInt(2,5);
     this.x = -1 * this.width;
     this.y = blockHeight*this.row - blockHeight/2 - this.height/2;
+
+    this.rightBound = blockWidth*blockColumns - blockWidth/2 - this.width/2;
     
     //*****STILL NEED TO ADJUST SPEED BASED ON LEVEL*******
     var lowerSpeed = 100 * Math.pow(crossing+1, 0.3);
@@ -143,7 +149,7 @@ Enemy.prototype = {
     this.x += this.speed * dt;
 
     //if the entitiy has moved off the screen then change the toRemove property to true
-    if(this.x > blockWidth * 5)
+    if(this.x > blockWidth * blockColumns)
         this.toRemove = true;
     },
     // Draw the enemy on the screen, required method for game
@@ -184,7 +190,9 @@ StaticPrize = function(prizeIndex) {
     this.y = blockHeight*this.row - blockHeight/2 - this.height/2;
 
     this.blink = true;
+    this.timeCreated = Date.now();
     this.timeStamp = Date.now();
+    this.toRemove = false;
 };
 
 StaticPrize.prototype = {
@@ -193,6 +201,8 @@ StaticPrize.prototype = {
             this.blink = !this.blink;
             this.timeStamp = Date.now();
         }
+        if(getRandomInt(0,700)<2)
+            allStaticPrizes.splice(this);
     },
     render: function() {
         if(this.blink)
@@ -203,6 +213,38 @@ StaticPrize.prototype = {
     },
     status: function() {
         //put in a blink function
+        
+    }
+};
+
+Obstacle = function(obstacleIndex) {
+    this.height = images.obstacles[obstacleIndex].height;
+    this.width = images.obstacles[obstacleIndex].width;
+    this.sprite = images.obstacles[obstacleIndex].url;
+
+    this.row = getRandomInt(2,5);
+    this.column = getRandomInt(1,6);
+
+    this.x = blockWidth*this.column - blockWidth/2 - this.width/2;
+    this.y = blockHeight*this.row - blockHeight/2 - this.height/2;
+
+    this.timeCreated = Date.now();
+    this.timeStamp = Date.now();
+    this.toRemove = false;
+};
+
+Obstacle.prototype = {
+    update: function() {
+        if(getRandomInt(0,1000)<2)
+            allObstacles.splice(this);
+    },
+    render: function() {
+            ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    },
+    reset: function() {
+
+    },
+    status: function() {
         
     }
 };
@@ -219,11 +261,10 @@ Player = function(avatarIndex) {
     this.x = blockWidth*3 - blockWidth/2 - this.width/2;
     this.y = blockHeight*5 - blockHeight/2 - this.height/2;
 
-    //define the playing area based on size of sprite
     this.upperBound = blockHeight*2 - blockHeight/2 - this.height/2;
     this.lowerBound = blockHeight*3 - blockHeight/2 - this.height/2;
-    this.leftBound = blockWidth*1 - blockWidth/2 - this.width/2;
-    this.rightBound = blockWidth*5 - blockWidth/2 - this.width/2;
+    this.leftBound = blockWidth - blockWidth/2 - this.width/2;
+    this.rightBound = blockWidth*blockColumns - blockWidth/2 - this.width/2;
 };
 
 Player.prototype = {
@@ -249,7 +290,7 @@ Player.prototype = {
                     this.row--;
                 }
                 else {
-                    score += 100;
+                    score += 20;
                     crossing +=1;
                     player.reset('success');
                 }
@@ -282,21 +323,17 @@ var enemies = function() {
 
 //function to instantiate Player object in a variable called player
 var createPlayer = function() {
-    player = new Player(playerIndex);
+    player = new Player(getRandomInt(0,images.avatar.length));
 };
 
 var staticPrizes = function() {
-    if(getRandomInt(1,1000)<2)
+    if(getRandomInt(1,1000)<6)
         allStaticPrizes.push(new StaticPrize(getRandomInt(0,images.staticModifiers.length)));
 };
 
-var createStaticPrizeIndex = function() {
-    staticPrizeIndex = getRandomInt(0,images.avatar.length);
-};
-
-//Randomise the Player avatar
-var createPlayerIndex = function() {
-    playerIndex = getRandomInt(0,images.avatar.length);
+var obstacles = function() {
+    if(getRandomInt(1,1000)<5)
+        allObstacles.push(new Obstacle(getRandomInt(0,images.obstacles.length)));
 };
 
 // This listens for key presses and sends the keys to your
