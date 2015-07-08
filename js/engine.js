@@ -239,7 +239,6 @@ var Engine = (function(global) {
             allObstacles.forEach(function(obstacle) {
                 obstacle.render();
             });
-
             //loop through allEnemies and render each enemy object in the array
             allEnemies.forEach(function(enemy) {
                 enemy.render(isGameOver);

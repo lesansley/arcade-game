@@ -52,7 +52,6 @@ Enemy.prototype = {
             allEnemies(enemy).toRemove=true;
             console.log("all enemies set to remove");
         }
-
     }
 };
 
@@ -96,13 +95,12 @@ StaticPrize.prototype = {
     }
 };
 
-Obstacle = function(obstacleIndex) {
+Obstacle = function(obstacleIndex,row,col) {
     this.height = Images.obstacles[obstacleIndex].height;
     this.width = Images.obstacles[obstacleIndex].width;
     this.sprite = Images.obstacles[obstacleIndex].url;
-
-    this.row = getRandomInt(2,5);
-    this.column = getRandomInt(1,6);
+    this.row = row;
+    this.column = col;
 
     this.x = blockWidth*this.column - blockWidth/2 - this.width/2;
     this.y = blockHeight*this.row - blockHeight/2 - this.height/2;
@@ -136,14 +134,16 @@ Player = function(avatarIndex) {
     
     this.sprite = Images.avatar[avatarIndex].url;
     this.row = 5;
-    //set the start co-ordinates to the middle of the square. Assign a random column
-    this.x = blockWidth*3 - blockWidth/2 - this.width/2;
-    this.y = blockHeight*5 - blockHeight/2 - this.height/2;
+    this.column = 3;
 
-    this.upperBound = blockHeight*2 - blockHeight/2 - this.height/2;
-    this.lowerBound = blockHeight*3 - blockHeight/2 - this.height/2;
-    this.leftBound = blockWidth - blockWidth/2 - this.width/2;
-    this.rightBound = blockWidth*blockColumns - blockWidth/2 - this.width/2;
+    //set the start co-ordinates to the middle of the square. Assign a random column
+    this.x = blockWidth*this.column - blockWidth/2 - this.width/2;
+    this.y = blockHeight*this.row - blockHeight/2 - this.height/2;
+
+    this.upperRow = 2;
+    this.lowerRow = 3;
+    this.leftColumn = 1
+    this.rightColumn = 5;
 
     this.Index = avatarIndex;
 };
@@ -154,30 +154,37 @@ Player.prototype = {
     },
     render: function() {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+        //console.log('render');
     },
     handleInput: function(key) {
         switch(key) {
             case 'left':
-                if(this.x !== this.leftBound) 
+                if(this.column !== this.leftColumn && obstacleFree(this.row, this.column-1)) {
                     this.x -= blockWidth;//left command code
+                    this.column--;
+                }
                 break;
             case 'right':
-                if(this.x !== this.rightBound)
-                    this.x += blockWidth;//right command code
+                if(this.column !== this.rightColumn && obstacleFree(this.row, this.column+1)) {
+                    this.x += blockWidth;
+                    this.column++;
+                }
                 break;
             case 'up':
-                if(this.y !== this.upperBound) {
-                    this.y -= blockHeight;//up command code
-                    this.row--;
-                }
-                else {
+                if(this.row <= this.upperRow) {
                     score += 20;
                     crossing +=1;
                     player.reset('success');
+                    //console.log('Row: ' + this.row + ' UpperRow: ' + this.upperRow)
                 }
+                 else if(obstacleFree(this.row-1, this.column)) {
+                    this.y -= blockHeight;//up command code
+                    this.row--;
+                }
+                
                 break;
             case 'down':
-                if(this.y <= this.lowerBound) {
+                if(this.row <= this.lowerRow && obstacleFree(this.row + 1, this.column)) {
                     this.y += blockHeight;//down command code
                     this.row++;
                 }
@@ -190,6 +197,17 @@ Player.prototype = {
     }
 };
 
+//Assess whether there is an obstacle in the way of teh player and return true or false
+function obstacleFree(playerRow, playerCol) {
+    var noObstruction = true;
+    for(var obstacle in allObstacles) {
+        if(playerRow === allObstacles[obstacle].row && playerCol === allObstacles[obstacle].column)
+            noObstruction = false;
+    }
+    return noObstruction;
+}
+
+//generates a random integer based on the range provided
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
@@ -212,8 +230,18 @@ var staticPrizes = function() {
 };
 
 var obstacles = function() {
+    var row,
+        col;
+    do {
+        var collide = false;
+        row = getRandomInt(2,5);
+        col = getRandomInt(1,6);
+        if(row === player.row && col === player.column)
+            collide = true;
+    }
+    while (collide);
     if(getRandomInt(1,1000)<5)
-        allObstacles.push(new Obstacle(getRandomInt(0,Images.obstacles.length)));
+        allObstacles.push(new Obstacle(getRandomInt(0,Images.obstacles.length),row,col));
 };
 
 // This listens for key presses and sends the keys to your
