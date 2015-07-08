@@ -171,11 +171,6 @@ var Engine = (function(global) {
          */
         for (row = 0; row < numRows; row++) {
             for (col = 0; col < blockColumns; col++) {
-
-                //the get function is used instead of just passing the url or array value
-                //in order that the cached image is presented 
-                //and not a new load of the image, which has perfromance implications.
-
                 ctx.drawImage(Resources.get(rowImages[row]), col * blockWidth, row * blockHeight);
             }
         }
@@ -185,10 +180,10 @@ var Engine = (function(global) {
         ctx.fillStyle = 'white';
         ctx.fillRect(blockWidth*blockColumns,0, blockWidth, canvas.height);
         for(var i = 0; i < images.staticModifiers.length; i++) {
-            ctx.drawImage(Resources.get(images.staticModifiers[i].url), canvas.width - blockWidth/2 - images.staticModifiers[i].width/2, (i+1) * blockHeight + blockHeight/2 - images.staticModifiers[i].height/2);
-            ctx.fillStyle='rgba(0,0,0,.75)';
-            ctx.fillText(images.staticModifiers[i].points, canvas.width - blockWidth/2 - images.staticModifiers[i].width/2, (i+1) * blockHeight + blockHeight/2);
-            console.log(images.staticModifiers[i].points);
+            ctx.drawImage(Resources.get(images.staticModifiers[i].url), canvas.width - blockWidth/2 - images.staticModifiers[i].width/2, (i+1) * blockHeight + images.staticModifiers[i].height/2);
+            ctx.font = '100 26px Orbitron';
+            ctx.fillStyle='rgba(0,0,0,.65)';
+            ctx.fillText(images.staticModifiers[i].points + 'pts', canvas.width - blockWidth/2 - ctx.measureText(images.staticModifiers[i].points+'pts').width/2, (i+1) * blockHeight + blockHeight/2+15);
         }
         
     }
@@ -249,7 +244,12 @@ var Engine = (function(global) {
             document.getElementById('game-over').style.display = 'block';
             isGameOver = true;
         }
+        renderTransition();
         player.reset(player.index);
+    }
+
+    function renderTransition() {
+
     }
 
     function setToRemove() {

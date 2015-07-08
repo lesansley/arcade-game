@@ -87,14 +87,14 @@ var images = {
             width:49,
             height:50,
             url:'images/Heart.png',
-            points: 35
+            points: 50
         },
         {
             name:'key',
             width:30,
             height:50,
             url:'images/Key.png',
-            points: 50
+            points: 35
         }
     ],
     'dynamicModifiers': [
@@ -109,8 +109,8 @@ var images = {
     'obstacles': [
         {
             name:'rock',
-            width:98,
-            height:98,
+            width:80,
+            height:80,
             url:'images/Rock.png',
             points: 40
         }

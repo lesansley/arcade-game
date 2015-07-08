@@ -9,9 +9,7 @@
     var loading = [];
     var readyCallbacks = [];
 
-    //This function can be called from other places because it is defined as a method
-    //on the Resources object at the end of this function. To call it dot notation is
-    //used (i.e. Resources.load)
+    //This function can be called from other places prefixed with 'Resources' (??)
     /* The call call is made from the engine files. The load function accepts
      * an array of strings pointing to image files or a string for a single
      * image. It will then call our private image loading function accordingly. 
@@ -32,8 +30,6 @@
         }
     }
 
-
-
     //private load function denoted by preceding underscore
     function _load(url) {
         if(resourceCache[url]) {
@@ -47,7 +43,6 @@
              * within our cache; we'll need to load this image.
              */
             var img = new Image();
-
             img.onload = function() {
                 /* Once our image has properly loaded, add it to our cache
                  * so that we can simply return this image if the developer
@@ -68,9 +63,7 @@
              * the images src attribute to the passed in URL.
              */
             resourceCache[url] = false;
-            resourceCache[url].width = 20;
             img.src = url;
-
         }
     }
 
@@ -78,33 +71,9 @@
      * have been previously loaded. If an image is cached, this functions
      * the same as calling load() on that URL.
      */
-    function get(url, dimension) {
-        switch(dimension) {
-            case 'app':
-                //console.log(resourceCache[url].width);
-                return resourceCache[url];
-                
-                break;
-            case 'height':
-                //console.log(resourceCache[url].height);
-                //return resourceCache[url].height;
-                break;
-            default:
-                //console.log(resourceCache[url].width);
-                return resourceCache[url];
-        }
+    function get(url) {
+        return resourceCache[url];
     }
-
-    function getSpriteHeight(url) {
-        //return resourceCache[url].height;
-        console.log(url);
-        console.log(resourceCache);
-    }
-
-    function getSpriteWidth(url) {
-        //return resourceCache[url].width;
-    }
-
 
     /* This function determines if all of the images that have been requested
      * for loading have in fact been completed loaded.
@@ -124,7 +93,7 @@
     /* This function will add a function to the callback stack that is called
      * when all requested images are properly loaded.
      */
-    function onReady(func) { //called from engine.js and passed 'init' as a parameter
+    function onReady(func) {
         readyCallbacks.push(func);
     }
 
@@ -136,8 +105,6 @@
         load: load, //load function
         get: get,// get function
         onReady: onReady, //onReady function
-        isReady: isReady, //isready function
-        getSpriteWidth: getSpriteWidth,
-        getSpriteHeight:getSpriteHeight
+        isReady: isReady //isready function
     };
 })();
