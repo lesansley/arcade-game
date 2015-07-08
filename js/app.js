@@ -1,10 +1,6 @@
 
 //declare global variables we will need
-var blockWidth = 101,
-    blockHeight = 83,
-    blockColumns = 5,
-    playerIndex,
-    lives,
+var lives,
     score,
     crossing,
     isGameOver,
@@ -174,7 +170,6 @@ var loadImages = function() {
         }
     }
     return allImages;
-    console.log(allImages);
 };
 
 StaticPrize = function(prizeIndex) {
