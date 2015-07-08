@@ -1,2 +1,2 @@
-This is a version of teh classic Frogger Game where the objective of the game is get to the otherside of the road collecting prizes that convert to points without colliding with bugs.
-The lady-bugs move at variable speeds that progressively increase as your score increases. You control the direction of movement of your avatar with the arrow keys.
+This is a version of the classic Frogger Game where the objective of the game is get your player to the otherside of the road collecting prizes that convert to points without colliding with bugs. Your progression is  hampered by rocks that appear, which you cannot move through.
+The lady-bugs move at variable speeds that progressively increase as your score increases. You control the direction of movement of your player with the arrow keys. The points available from the prizes are dependent on the prize. 
