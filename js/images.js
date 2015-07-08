@@ -1,3 +1,4 @@
+//A JSON of images required in the app
 (function() {
     var images = {
         'avatar':[
@@ -103,6 +104,7 @@
         ]
     };
 
+    //Place all images into an array
     function loadImages() {
     var allImages=[];
     for(var pics in images){
@@ -113,6 +115,7 @@
     return allImages;
     }
 
+    //make the methods, variables and properties available from elsewhere
     window.Images = { //Resources object JSON
         loadImages: loadImages, //load function
         images: images,

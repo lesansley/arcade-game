@@ -21,10 +21,9 @@ var Enemy = function(enemyIndex) {
 
     this.rightBound = blockWidth*blockColumns - blockWidth/2 - this.width/2;
     
-    //*****STILL NEED TO ADJUST SPEED BASED ON LEVEL*******
+    //adjust speed based on number of times the player has reached the other side
     var lowerSpeed = 100 * Math.pow(crossing+1, 0.3);
     var upperSpeed = 300 * Math.pow(crossing+1, 0.4);
-
     this.speed = getRandomInt(lowerSpeed,upperSpeed);
     this.toRemove = false;
 };
@@ -42,19 +41,14 @@ Enemy.prototype = {
     if(this.x > blockWidth * blockColumns)
         this.toRemove = true;
     },
-    // Draw the enemy on the screen, required method for game
+    // Draw the enemy on the screen if the gameOver is false
     render: function(gameOver) {
     if(!gameOver)
         ctx.drawImage(Resources.get(this.sprite,'app'), this.x, this.y);
-    },
-    reset: function() {
-        for(var enemy in allEnemies) {
-            allEnemies(enemy).toRemove=true;
-            console.log("all enemies set to remove");
-        }
     }
 };
 
+//object constructor class for the static prizes
 StaticPrize = function(prizeIndex) {
     this.height = Images.staticModifiers[prizeIndex].height;
     this.width = Images.staticModifiers[prizeIndex].width;
@@ -74,27 +68,24 @@ StaticPrize = function(prizeIndex) {
 };
 
 StaticPrize.prototype = {
+    //set the blink property of the prize
     update: function() {
-        if(Date.now()-this.timeStamp>150) {
+        if(Date.now()-this.timeStamp>200) {
             this.blink = !this.blink;
             this.timeStamp = Date.now();
         }
+        //randomly remove prizes
         if(getRandomInt(0,700)<2)
             allStaticPrizes.splice(this);
     },
-    render: function() {
-        if(this.blink)
+    render: function(gameOver) {
+        //only draw if the blink property is true, creating a twinkling effect
+        if(this.blink && !gameOver)
             ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    },
-    reset: function() {
-
-    },
-    status: function() {
-        //put in a blink function
-        
     }
 };
 
+//object constructor class for the obstacles
 Obstacle = function(obstacleIndex,row,col) {
     this.height = Images.obstacles[obstacleIndex].height;
     this.width = Images.obstacles[obstacleIndex].width;
@@ -117,17 +108,10 @@ Obstacle.prototype = {
     },
     render: function() {
             ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    },
-    reset: function() {
-
-    },
-    status: function() {
-        
     }
 };
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
+
+//Player constructor class
 Player = function(avatarIndex) {
     this.height = Images.avatar[avatarIndex].height;
     this.width = Images.avatar[avatarIndex].width;
@@ -149,14 +133,11 @@ Player = function(avatarIndex) {
 };
 
 Player.prototype = {
-    update: function() {
-
-    },
     render: function() {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-        //console.log('render');
     },
     handleInput: function(key) {
+        //always perform check to see wheher the player will be moving out of bounds or into a rock
         switch(key) {
             case 'left':
                 if(this.column !== this.leftColumn && obstacleFree(this.row, this.column-1)) {
@@ -175,9 +156,8 @@ Player.prototype = {
                     score += 20;
                     crossing +=1;
                     setTimeout(function() {
-                        player.reset('success');
+                        player.reset();
                     }, 100);
-                    //console.log('Row: ' + this.row + ' UpperRow: ' + this.upperRow)
                 }
                  else if(obstacleFree(this.row-1, this.column)) {
                     this.y -= blockHeight;//up command code
@@ -194,7 +174,8 @@ Player.prototype = {
             default:
         }
     },
-    reset: function(outcome) {//called when collision or success happens
+    //called for collision or successful crossing
+    reset: function() {
         createPlayer(this.Index);
     }
 };
@@ -214,8 +195,7 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-//Instantiate Enemny object and place all enemy objects in an array called allEnemies
-
+//Instantiate Enemy object and place all enemy objects in an array called allEnemies
 var enemies = function() {
     if(getRandomInt(1,1000)<20)
         allEnemies.push(new Enemy(getRandomInt(0,Images.enemy.length)));
@@ -226,14 +206,17 @@ var createPlayer = function(index) {
     player = new Player(index);
 };
 
+//Instantiate static prize object and place all enemy objects in an array called allEnemies
 var staticPrizes = function() {
     if(getRandomInt(1,1000)<6)
         allStaticPrizes.push(new StaticPrize(getRandomInt(0,Images.staticModifiers.length)));
 };
 
+//Instantiate obstacle object and place all enemy objects in an array called allEnemies
 var obstacles = function() {
     var row,
         col;
+    //the row and column are only set if the new object is not placed in teh same square as the player
     do {
         var collide = false;
         row = getRandomInt(2,5);

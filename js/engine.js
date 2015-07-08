@@ -219,7 +219,7 @@ var Engine = (function(global) {
             ctx.fillText('GAME',blockWidth*blockColumns/2 - ctx.measureText('GAME').width/2, canvas.height - canvas.height/1.5);
             ctx.fillText('OVER',blockWidth*blockColumns/2 - ctx.measureText('OVER').width/2, canvas.height - canvas.height/2.3);
         }
-        //draw the instruciton text for moving the player
+        //draw the instruction text for moving the player
         else {
             ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
             ctx.font = '100 30px Orbitron';
@@ -235,7 +235,7 @@ var Engine = (function(global) {
         if(!isGameOver) {
             //loop through allStaticPrizes and call the render method for each prize object in the array
             allStaticPrizes.forEach(function(prize) {
-                prize.render();
+                prize.render(isGameOver);
             });
             //
             player.render();
@@ -249,23 +249,19 @@ var Engine = (function(global) {
             });
         }
     }
-
-
+    //evaluate whether the game is over and perform appropriate tasks
     function gameOver(remainingLives) {
         if(remainingLives===0) {
+            //make the Play Again buttin visible
             document.getElementById('game-over').style.display = 'block';
             isGameOver = true;
         }
+        //delay the method call
         setTimeout(function() {
-            player.reset(player.index);
+            player.reset();
         }, 150);
     }
-
-    function pause(time) {
-        console.log('entered pause');
-        var myVar = setTimeout(function(){return true;}, time);
-    }
-
+    //mark entities for removal
     function setToRemove() {
         for(var enemy in allEnemies) {
             allEnemies[enemy].toRemove = true;
