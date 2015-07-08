@@ -174,7 +174,9 @@ Player.prototype = {
                 if(this.row <= this.upperRow) {
                     score += 20;
                     crossing +=1;
-                    player.reset('success');
+                    setTimeout(function() {
+                        player.reset('success');
+                    }, 100);
                     //console.log('Row: ' + this.row + ' UpperRow: ' + this.upperRow)
                 }
                  else if(obstacleFree(this.row-1, this.column)) {

@@ -31,8 +31,6 @@ var Engine = (function(global) {
         gameStart,
         playerIndex;
 
-    
-
     canvas.width = blockWidth*(blockColumns+1);
     canvas.height = 548;
     $('#canvas').append(canvas);//add to DOM
@@ -139,7 +137,6 @@ var Engine = (function(global) {
                     allStaticPrizes.splice(prizes,1);
                 }
             }
-
         }
     }
 
@@ -185,8 +182,12 @@ var Engine = (function(global) {
         
         renderEntities();
         renderCanvasText();
+
+        //blank the right side of the canvas with a white backgound
         ctx.fillStyle = 'white';
         ctx.fillRect(blockWidth*blockColumns,0, blockWidth, canvas.height);
+        
+        //draw the prize images and points values beside the playing field
         for(var i = 0; i < Images.staticModifiers.length; i++) {
             ctx.drawImage(Resources.get(Images.staticModifiers[i].url), canvas.width - blockWidth/2 - Images.staticModifiers[i].width/2, (i+1) * blockHeight + Images.staticModifiers[i].height/2);
             ctx.font = '100 26px Orbitron';
@@ -201,14 +202,15 @@ var Engine = (function(global) {
         var livesText = 'Lives: ' + lives;
         var instructionText = 'Move player with arrows';
         
+        //draw the game status text on the canvas updating teh score and lives
         ctx.font = '900 40px Orbitron';
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        
         ctx.fillText(scoreText, 5, blockHeight/2 + 40/2);
         if(lives===1)
             ctx.fillStyle = 'rgba(196, 30, 0, 0.5)';
         ctx.fillText('Lives: ' + lives, 318, blockHeight/2 + 40/2);
 
+        //draw the background and Game Over text
         if(isGameOver){
             ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
             ctx.fillRect(0,0,blockWidth * blockColumns,canvas.height);
@@ -217,6 +219,7 @@ var Engine = (function(global) {
             ctx.fillText('GAME',blockWidth*blockColumns/2 - ctx.measureText('GAME').width/2, canvas.height - canvas.height/1.5);
             ctx.fillText('OVER',blockWidth*blockColumns/2 - ctx.measureText('OVER').width/2, canvas.height - canvas.height/2.3);
         }
+        //draw the instruciton text for moving the player
         else {
             ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
             ctx.font = '100 30px Orbitron';
@@ -230,33 +233,37 @@ var Engine = (function(global) {
      */
     function renderEntities() {
         if(!isGameOver) {
+            //loop through allStaticPrizes and call the render method for each prize object in the array
             allStaticPrizes.forEach(function(prize) {
                 prize.render();
             });
-
+            //
             player.render();
-
+            //loop through allObstacles and call the render method for each obstacle object in the array
             allObstacles.forEach(function(obstacle) {
                 obstacle.render();
             });
-            //loop through allEnemies and render each enemy object in the array
+            //loop through allEnemies and call the render method for each enemy object in the array
             allEnemies.forEach(function(enemy) {
                 enemy.render(isGameOver);
             });
         }
     }
 
+
     function gameOver(remainingLives) {
         if(remainingLives===0) {
             document.getElementById('game-over').style.display = 'block';
             isGameOver = true;
         }
-        renderTransition();
-        player.reset(player.index);
+        setTimeout(function() {
+            player.reset(player.index);
+        }, 150);
     }
 
-    function renderTransition() {
-
+    function pause(time) {
+        console.log('entered pause');
+        var myVar = setTimeout(function(){return true;}, time);
     }
 
     function setToRemove() {
