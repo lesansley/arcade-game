@@ -28,6 +28,7 @@ var Engine = (function(global) {
         blockHeight = 83,
         blockColumns = 5,
         isGameOver,
+        gameStart,
         playerIndex;
 
     
@@ -186,11 +187,11 @@ var Engine = (function(global) {
         renderCanvasText();
         ctx.fillStyle = 'white';
         ctx.fillRect(blockWidth*blockColumns,0, blockWidth, canvas.height);
-        for(var i = 0; i < Images.images.staticModifiers.length; i++) {
-            ctx.drawImage(Resources.get(Images.images.staticModifiers[i].url), canvas.width - blockWidth/2 - Images.images.staticModifiers[i].width/2, (i+1) * blockHeight + Images.images.staticModifiers[i].height/2);
+        for(var i = 0; i < Images.staticModifiers.length; i++) {
+            ctx.drawImage(Resources.get(Images.staticModifiers[i].url), canvas.width - blockWidth/2 - Images.staticModifiers[i].width/2, (i+1) * blockHeight + Images.staticModifiers[i].height/2);
             ctx.font = '100 26px Orbitron';
             ctx.fillStyle='rgba(0,0,0,.65)';
-            ctx.fillText(Images.images.staticModifiers[i].points + 'pts', canvas.width - blockWidth/2 - ctx.measureText(Images.images.staticModifiers[i].points+'pts').width/2, (i+1) * blockHeight + blockHeight/2+15);
+            ctx.fillText(Images.staticModifiers[i].points + 'pts', canvas.width - blockWidth/2 - ctx.measureText(Images.staticModifiers[i].points+'pts').width/2, (i+1) * blockHeight + blockHeight/2+15);
         }
         
     }
@@ -268,7 +269,7 @@ var Engine = (function(global) {
     //It's only called once by the init() method.
     function reset() {
         document.getElementById('game-over').style.display = 'none';
-        createPlayer(getRandomInt(0,Images.images.avatar.length));
+        createPlayer(getRandomInt(0,Images.avatar.length));
         setToRemove();
         removeEntities();
         isGameOver = false;

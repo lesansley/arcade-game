@@ -115,6 +115,12 @@
 
     window.Images = { //Resources object JSON
         loadImages: loadImages, //load function
-        images: images
+        images: images,
+        avatar: images.avatar,
+        obstacles: images.obstacles,
+        dynamicModifiers: images.dynamicModifiers,
+        staticModifiers: images.staticModifiers,
+        enemy: images.enemy,
+        background: images.background
     };
 })();

@@ -10,10 +10,10 @@ var lives,
 // Enemies our player must avoid
 var Enemy = function(enemyIndex) {
 
-    this.sprite = Images.images.enemy[enemyIndex].url;
+    this.sprite = Images.enemy[enemyIndex].url;
 
-    this.height = Images.images.enemy[enemyIndex].height;
-    this.width = Images.images.enemy[enemyIndex].width;
+    this.height = Images.enemy[enemyIndex].height;
+    this.width = Images.enemy[enemyIndex].width;
     
     this.row = getRandomInt(2,5);
     this.x = -1 * this.width;
@@ -57,10 +57,10 @@ Enemy.prototype = {
 };
 
 StaticPrize = function(prizeIndex) {
-    this.height = Images.images.staticModifiers[prizeIndex].height;
-    this.width = Images.images.staticModifiers[prizeIndex].width;
-    this.sprite = Images.images.staticModifiers[prizeIndex].url;
-    this.points = Images.images.staticModifiers[prizeIndex].points;
+    this.height = Images.staticModifiers[prizeIndex].height;
+    this.width = Images.staticModifiers[prizeIndex].width;
+    this.sprite = Images.staticModifiers[prizeIndex].url;
+    this.points = Images.staticModifiers[prizeIndex].points;
 
     this.row = getRandomInt(2,5);
     this.column = getRandomInt(1,6);
@@ -97,9 +97,9 @@ StaticPrize.prototype = {
 };
 
 Obstacle = function(obstacleIndex) {
-    this.height = Images.images.obstacles[obstacleIndex].height;
-    this.width = Images.images.obstacles[obstacleIndex].width;
-    this.sprite = Images.images.obstacles[obstacleIndex].url;
+    this.height = Images.obstacles[obstacleIndex].height;
+    this.width = Images.obstacles[obstacleIndex].width;
+    this.sprite = Images.obstacles[obstacleIndex].url;
 
     this.row = getRandomInt(2,5);
     this.column = getRandomInt(1,6);
@@ -131,10 +131,10 @@ Obstacle.prototype = {
 // This class requires an update(), render() and
 // a handleInput() method.
 Player = function(avatarIndex) {
-    this.height = Images.images.avatar[avatarIndex].height;
-    this.width = Images.images.avatar[avatarIndex].width;
+    this.height = Images.avatar[avatarIndex].height;
+    this.width = Images.avatar[avatarIndex].width;
     
-    this.sprite = Images.images.avatar[avatarIndex].url;
+    this.sprite = Images.avatar[avatarIndex].url;
     this.row = 5;
     //set the start co-ordinates to the middle of the square. Assign a random column
     this.x = blockWidth*3 - blockWidth/2 - this.width/2;
@@ -198,7 +198,7 @@ function getRandomInt(min, max) {
 
 var enemies = function() {
     if(getRandomInt(1,1000)<20)
-        allEnemies.push(new Enemy(getRandomInt(0,Images.images.enemy.length)));
+        allEnemies.push(new Enemy(getRandomInt(0,Images.enemy.length)));
 };
 
 //function to instantiate Player object in a variable called player
@@ -208,12 +208,12 @@ var createPlayer = function(index) {
 
 var staticPrizes = function() {
     if(getRandomInt(1,1000)<6)
-        allStaticPrizes.push(new StaticPrize(getRandomInt(0,Images.images.staticModifiers.length)));
+        allStaticPrizes.push(new StaticPrize(getRandomInt(0,Images.staticModifiers.length)));
 };
 
 var obstacles = function() {
     if(getRandomInt(1,1000)<5)
-        allObstacles.push(new Obstacle(getRandomInt(0,Images.images.obstacles.length)));
+        allObstacles.push(new Obstacle(getRandomInt(0,Images.obstacles.length)));
 };
 
 // This listens for key presses and sends the keys to your
