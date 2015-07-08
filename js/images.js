@@ -1,5 +1,4 @@
 (function() {
-
     var images = {
         'avatar':[
             {
@@ -115,6 +114,7 @@
     }
 
     window.Images = { //Resources object JSON
-        loadImages: loadImages //load function
+        loadImages: loadImages, //load function
+        images: images
     };
 })();

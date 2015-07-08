@@ -3,123 +3,17 @@
 var lives,
     score,
     crossing,
-    isGameOver,
     allEnemies = [],
-    allImages = [],
     allStaticPrizes = [],
     allObstacles = [];
-
-var images = {
-    'avatar':[
-        {
-            name:'boy',
-            width:67,
-            height:88,
-            url:'images/char-boy.png'
-        },
-        {
-            name:'princess',
-            width:75,
-            height:99,
-            url:'images/char-princess-girl.png'
-        },
-        {
-            name:'horn-girl',
-            width:77,
-            height:90,
-            url:'images/char-horn-girl.png'
-        },
-        {
-            name:'cat-girl',
-            width:68,
-            height:90,
-            url:'images/char-cat-girl.png'
-        },
-        {
-            name:'pink-girl',
-            width:76,
-            height:89,
-            url:'images/char-pink-girl.png'
-        }
-    ],
-    'background': [
-        {
-            name:'stone-block',
-            width:101,
-            height:123,
-            url:'images/stone-block.png'
-        },
-        {
-            name:'grass-block',
-            width:101,
-            height:131,
-            url:'images/grass-block.png'
-        },
-        {
-            name:'water-block',
-            width:101,
-            height:120,
-            url:'images/water-block.png'
-        }
-    ],
-    'enemy': [
-        {
-            name:'enemy-bug',
-            width:99,
-            height:77,
-            url:'images/enemy-bug.png'
-        }
-    ],
-    'staticModifiers': [
-        {
-            name:'star',
-            width:50,
-            height:50,
-            url:'images/Star.png',
-            points: 100
-        },
-        {
-            name:'heart',
-            width:49,
-            height:50,
-            url:'images/Heart.png',
-            points: 50
-        },
-        {
-            name:'key',
-            width:30,
-            height:50,
-            url:'images/Key.png',
-            points: 35
-        }
-    ],
-    'dynamicModifiers': [
-        {
-            name:'selector',//Make move like enemy but get points
-            width:101,
-            height:171,
-            url:'images/Selector.png',
-            points: 200
-        }
-    ],
-    'obstacles': [
-        {
-            name:'rock',
-            width:80,
-            height:80,
-            url:'images/Rock.png',
-            points: 40
-        }
-    ]
-};
 
 // Enemies our player must avoid
 var Enemy = function(enemyIndex) {
 
-    this.sprite = images.enemy[enemyIndex].url;
+    this.sprite = Images.images.enemy[enemyIndex].url;
 
-    this.height = images.enemy[enemyIndex].height;
-    this.width = images.enemy[enemyIndex].width;
+    this.height = Images.images.enemy[enemyIndex].height;
+    this.width = Images.images.enemy[enemyIndex].width;
     
     this.row = getRandomInt(2,5);
     this.x = -1 * this.width;
@@ -149,8 +43,8 @@ Enemy.prototype = {
         this.toRemove = true;
     },
     // Draw the enemy on the screen, required method for game
-    render: function() {
-    if(!isGameOver)
+    render: function(gameOver) {
+    if(!gameOver)
         ctx.drawImage(Resources.get(this.sprite,'app'), this.x, this.y);
     },
     reset: function() {
@@ -162,21 +56,11 @@ Enemy.prototype = {
     }
 };
 
-
-var loadImages = function() {
-    for(var pics in images){
-        for(var i = 0; i < images[pics].length; i++) {
-            allImages.push(images[pics][i].url);
-        }
-    }
-    return allImages;
-};
-
 StaticPrize = function(prizeIndex) {
-    this.height = images.staticModifiers[prizeIndex].height;
-    this.width = images.staticModifiers[prizeIndex].width;
-    this.sprite = images.staticModifiers[prizeIndex].url;
-    this.points = images.staticModifiers[prizeIndex].points;
+    this.height = Images.images.staticModifiers[prizeIndex].height;
+    this.width = Images.images.staticModifiers[prizeIndex].width;
+    this.sprite = Images.images.staticModifiers[prizeIndex].url;
+    this.points = Images.images.staticModifiers[prizeIndex].points;
 
     this.row = getRandomInt(2,5);
     this.column = getRandomInt(1,6);
@@ -213,9 +97,9 @@ StaticPrize.prototype = {
 };
 
 Obstacle = function(obstacleIndex) {
-    this.height = images.obstacles[obstacleIndex].height;
-    this.width = images.obstacles[obstacleIndex].width;
-    this.sprite = images.obstacles[obstacleIndex].url;
+    this.height = Images.images.obstacles[obstacleIndex].height;
+    this.width = Images.images.obstacles[obstacleIndex].width;
+    this.sprite = Images.images.obstacles[obstacleIndex].url;
 
     this.row = getRandomInt(2,5);
     this.column = getRandomInt(1,6);
@@ -247,10 +131,10 @@ Obstacle.prototype = {
 // This class requires an update(), render() and
 // a handleInput() method.
 Player = function(avatarIndex) {
-    this.height = images.avatar[avatarIndex].height;
-    this.width = images.avatar[avatarIndex].width;
+    this.height = Images.images.avatar[avatarIndex].height;
+    this.width = Images.images.avatar[avatarIndex].width;
     
-    this.sprite = images.avatar[avatarIndex].url;
+    this.sprite = Images.images.avatar[avatarIndex].url;
     this.row = 5;
     //set the start co-ordinates to the middle of the square. Assign a random column
     this.x = blockWidth*3 - blockWidth/2 - this.width/2;
@@ -312,10 +196,9 @@ function getRandomInt(min, max) {
 
 //Instantiate Enemny object and place all enemy objects in an array called allEnemies
 
-
 var enemies = function() {
     if(getRandomInt(1,1000)<20)
-        allEnemies.push(new Enemy(getRandomInt(0,images.enemy.length)));
+        allEnemies.push(new Enemy(getRandomInt(0,Images.images.enemy.length)));
 };
 
 //function to instantiate Player object in a variable called player
@@ -325,12 +208,12 @@ var createPlayer = function(index) {
 
 var staticPrizes = function() {
     if(getRandomInt(1,1000)<6)
-        allStaticPrizes.push(new StaticPrize(getRandomInt(0,images.staticModifiers.length)));
+        allStaticPrizes.push(new StaticPrize(getRandomInt(0,Images.images.staticModifiers.length)));
 };
 
 var obstacles = function() {
     if(getRandomInt(1,1000)<5)
-        allObstacles.push(new Obstacle(getRandomInt(0,images.obstacles.length)));
+        allObstacles.push(new Obstacle(getRandomInt(0,Images.images.obstacles.length)));
 };
 
 // This listens for key presses and sends the keys to your
@@ -342,6 +225,5 @@ document.addEventListener('keyup', function(e) {
         39: 'right',
         40: 'down'
     };
-    if(!isGameOver)
-        player.handleInput(allowedKeys[e.keyCode]);
+    player.handleInput(allowedKeys[e.keyCode]);
 });
