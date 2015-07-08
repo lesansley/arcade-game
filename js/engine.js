@@ -23,7 +23,13 @@ var Engine = (function(global) {
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
-        lastTime;
+        lastTime,
+        blockWidth = 101,
+        blockHeight = 83,
+        blockColumns = 5,
+        isGameOver,
+        gameStart,
+        playerIndex;
 
     canvas.width = blockWidth*(blockColumns+1);
     canvas.height = 548;
@@ -131,7 +137,6 @@ var Engine = (function(global) {
                     allStaticPrizes.splice(prizes,1);
                 }
             }
-
         }
     }
 
@@ -177,13 +182,17 @@ var Engine = (function(global) {
         
         renderEntities();
         renderCanvasText();
+
+        //blank the right side of the canvas with a white backgound
         ctx.fillStyle = 'white';
         ctx.fillRect(blockWidth*blockColumns,0, blockWidth, canvas.height);
-        for(var i = 0; i < images.staticModifiers.length; i++) {
-            ctx.drawImage(Resources.get(images.staticModifiers[i].url), canvas.width - blockWidth/2 - images.staticModifiers[i].width/2, (i+1) * blockHeight + images.staticModifiers[i].height/2);
+        
+        //draw the prize images and points values beside the playing field
+        for(var i = 0; i < Images.staticModifiers.length; i++) {
+            ctx.drawImage(Resources.get(Images.staticModifiers[i].url), canvas.width - blockWidth/2 - Images.staticModifiers[i].width/2, (i+1) * blockHeight + Images.staticModifiers[i].height/2);
             ctx.font = '100 26px Orbitron';
             ctx.fillStyle='rgba(0,0,0,.65)';
-            ctx.fillText(images.staticModifiers[i].points + 'pts', canvas.width - blockWidth/2 - ctx.measureText(images.staticModifiers[i].points+'pts').width/2, (i+1) * blockHeight + blockHeight/2+15);
+            ctx.fillText(Images.staticModifiers[i].points + 'pts', canvas.width - blockWidth/2 - ctx.measureText(Images.staticModifiers[i].points+'pts').width/2, (i+1) * blockHeight + blockHeight/2+15);
         }
         
     }
@@ -193,14 +202,15 @@ var Engine = (function(global) {
         var livesText = 'Lives: ' + lives;
         var instructionText = 'Move player with arrows';
         
+        //draw the game status text on the canvas updating teh score and lives
         ctx.font = '900 40px Orbitron';
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        
         ctx.fillText(scoreText, 5, blockHeight/2 + 40/2);
         if(lives===1)
             ctx.fillStyle = 'rgba(196, 30, 0, 0.5)';
         ctx.fillText('Lives: ' + lives, 318, blockHeight/2 + 40/2);
 
+        //draw the background and Game Over text
         if(isGameOver){
             ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
             ctx.fillRect(0,0,blockWidth * blockColumns,canvas.height);
@@ -209,6 +219,7 @@ var Engine = (function(global) {
             ctx.fillText('GAME',blockWidth*blockColumns/2 - ctx.measureText('GAME').width/2, canvas.height - canvas.height/1.5);
             ctx.fillText('OVER',blockWidth*blockColumns/2 - ctx.measureText('OVER').width/2, canvas.height - canvas.height/2.3);
         }
+        //draw the instruction text for moving the player
         else {
             ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
             ctx.font = '100 30px Orbitron';
@@ -222,36 +233,35 @@ var Engine = (function(global) {
      */
     function renderEntities() {
         if(!isGameOver) {
+            //loop through allStaticPrizes and call the render method for each prize object in the array
             allStaticPrizes.forEach(function(prize) {
-                prize.render();
+                prize.render(isGameOver);
             });
-
+            //
             player.render();
-
+            //loop through allObstacles and call the render method for each obstacle object in the array
             allObstacles.forEach(function(obstacle) {
                 obstacle.render();
             });
-
-            //loop through allEnemies and render each enemy object in the array
+            //loop through allEnemies and call the render method for each enemy object in the array
             allEnemies.forEach(function(enemy) {
-                enemy.render();
+                enemy.render(isGameOver);
             });
         }
     }
-
+    //evaluate whether the game is over and perform appropriate tasks
     function gameOver(remainingLives) {
         if(remainingLives===0) {
+            //make the Play Again buttin visible
             document.getElementById('game-over').style.display = 'block';
             isGameOver = true;
         }
-        renderTransition();
-        player.reset(player.index);
+        //delay the method call
+        setTimeout(function() {
+            player.reset();
+        }, 150);
     }
-
-    function renderTransition() {
-
-    }
-
+    //mark entities for removal
     function setToRemove() {
         for(var enemy in allEnemies) {
             allEnemies[enemy].toRemove = true;
@@ -261,7 +271,7 @@ var Engine = (function(global) {
     //It's only called once by the init() method.
     function reset() {
         document.getElementById('game-over').style.display = 'none';
-        createPlayer(getRandomInt(0,images.avatar.length));
+        createPlayer(getRandomInt(0,Images.avatar.length));
         setToRemove();
         removeEntities();
         isGameOver = false;
@@ -274,7 +284,7 @@ var Engine = (function(global) {
     //Pre-loads all the images required for the game.
     //The load function is called from the resources file.
     //sends the array to the function in resources.js
-    Resources.load(loadImages());
+    Resources.load(Images.loadImages());
         
     Resources.onReady(init);
 
@@ -287,5 +297,8 @@ var Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
+    global.blockWidth = blockWidth;
+    global.blockHeight = blockHeight;
+    global.blockColumns = blockColumns;
     
 })(this);

@@ -1,129 +1,19 @@
 
 //declare global variables we will need
-var blockWidth = 101,
-    blockHeight = 83,
-    blockColumns = 5,
-    playerIndex,
-    lives,
+var lives,
     score,
     crossing,
-    isGameOver,
     allEnemies = [],
-    allImages = [],
     allStaticPrizes = [],
     allObstacles = [];
-
-var images = {
-    'avatar':[
-        {
-            name:'boy',
-            width:67,
-            height:88,
-            url:'images/char-boy.png'
-        },
-        {
-            name:'princess',
-            width:75,
-            height:99,
-            url:'images/char-princess-girl.png'
-        },
-        {
-            name:'horn-girl',
-            width:77,
-            height:90,
-            url:'images/char-horn-girl.png'
-        },
-        {
-            name:'cat-girl',
-            width:68,
-            height:90,
-            url:'images/char-cat-girl.png'
-        },
-        {
-            name:'pink-girl',
-            width:76,
-            height:89,
-            url:'images/char-pink-girl.png'
-        }
-    ],
-    'background': [
-        {
-            name:'stone-block',
-            width:101,
-            height:123,
-            url:'images/stone-block.png'
-        },
-        {
-            name:'grass-block',
-            width:101,
-            height:131,
-            url:'images/grass-block.png'
-        },
-        {
-            name:'water-block',
-            width:101,
-            height:120,
-            url:'images/water-block.png'
-        }
-    ],
-    'enemy': [
-        {
-            name:'enemy-bug',
-            width:99,
-            height:77,
-            url:'images/enemy-bug.png'
-        }
-    ],
-    'staticModifiers': [
-        {
-            name:'star',
-            width:50,
-            height:50,
-            url:'images/Star.png',
-            points: 100
-        },
-        {
-            name:'heart',
-            width:49,
-            height:50,
-            url:'images/Heart.png',
-            points: 50
-        },
-        {
-            name:'key',
-            width:30,
-            height:50,
-            url:'images/Key.png',
-            points: 35
-        }
-    ],
-    'dynamicModifiers': [
-        {
-            name:'selector',//Make move like enemy but get points
-            width:101,
-            height:171,
-            url:'images/Selector.png',
-            points: 200
-        }
-    ],
-    'obstacles': [
-        {
-            name:'rock',
-            width:80,
-            height:80,
-            url:'images/Rock.png',
-            points: 40
-        }
-    ]
-};
 
 // Enemies our player must avoid
 var Enemy = function(enemyIndex) {
 
-    this.sprite = images.enemy[enemyIndex].url;
+    this.sprite = Images.enemy[enemyIndex].url;
 
-    this.height = images.enemy[enemyIndex].height;
-    this.width = images.enemy[enemyIndex].width;
+    this.height = Images.enemy[enemyIndex].height;
+    this.width = Images.enemy[enemyIndex].width;
     
     this.row = getRandomInt(2,5);
     this.x = -1 * this.width;
@@ -131,10 +21,9 @@ var Enemy = function(enemyIndex) {
 
     this.rightBound = blockWidth*blockColumns - blockWidth/2 - this.width/2;
     
-    //*****STILL NEED TO ADJUST SPEED BASED ON LEVEL*******
+    //adjust speed based on number of times the player has reached the other side
     var lowerSpeed = 100 * Math.pow(crossing+1, 0.3);
     var upperSpeed = 300 * Math.pow(crossing+1, 0.4);
-
     this.speed = getRandomInt(lowerSpeed,upperSpeed);
     this.toRemove = false;
 };
@@ -152,36 +41,19 @@ Enemy.prototype = {
     if(this.x > blockWidth * blockColumns)
         this.toRemove = true;
     },
-    // Draw the enemy on the screen, required method for game
-    render: function() {
-    if(!isGameOver)
+    // Draw the enemy on the screen if the gameOver is false
+    render: function(gameOver) {
+    if(!gameOver)
         ctx.drawImage(Resources.get(this.sprite,'app'), this.x, this.y);
-    },
-    reset: function() {
-        for(var enemy in allEnemies) {
-            allEnemies(enemy).toRemove=true;
-            console.log("all enemies set to remove");
-        }
-
     }
 };
 
-
-var loadImages = function() {
-    for(var pics in images){
-        for(var i = 0; i < images[pics].length; i++) {
-            allImages.push(images[pics][i].url);
-        }
-    }
-    return allImages;
-    console.log(allImages);
-};
-
+//object constructor class for the static prizes
 StaticPrize = function(prizeIndex) {
-    this.height = images.staticModifiers[prizeIndex].height;
-    this.width = images.staticModifiers[prizeIndex].width;
-    this.sprite = images.staticModifiers[prizeIndex].url;
-    this.points = images.staticModifiers[prizeIndex].points;
+    this.height = Images.staticModifiers[prizeIndex].height;
+    this.width = Images.staticModifiers[prizeIndex].width;
+    this.sprite = Images.staticModifiers[prizeIndex].url;
+    this.points = Images.staticModifiers[prizeIndex].points;
 
     this.row = getRandomInt(2,5);
     this.column = getRandomInt(1,6);
@@ -196,34 +68,30 @@ StaticPrize = function(prizeIndex) {
 };
 
 StaticPrize.prototype = {
+    //set the blink property of the prize
     update: function() {
-        if(Date.now()-this.timeStamp>150) {
+        if(Date.now()-this.timeStamp>200) {
             this.blink = !this.blink;
             this.timeStamp = Date.now();
         }
+        //randomly remove prizes
         if(getRandomInt(0,700)<2)
             allStaticPrizes.splice(this);
     },
-    render: function() {
-        if(this.blink)
+    render: function(gameOver) {
+        //only draw if the blink property is true, creating a twinkling effect
+        if(this.blink && !gameOver)
             ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    },
-    reset: function() {
-
-    },
-    status: function() {
-        //put in a blink function
-        
     }
 };
 
-Obstacle = function(obstacleIndex) {
-    this.height = images.obstacles[obstacleIndex].height;
-    this.width = images.obstacles[obstacleIndex].width;
-    this.sprite = images.obstacles[obstacleIndex].url;
-
-    this.row = getRandomInt(2,5);
-    this.column = getRandomInt(1,6);
+//object constructor class for the obstacles
+Obstacle = function(obstacleIndex,row,col) {
+    this.height = Images.obstacles[obstacleIndex].height;
+    this.width = Images.obstacles[obstacleIndex].width;
+    this.sprite = Images.obstacles[obstacleIndex].url;
+    this.row = row;
+    this.column = col;
 
     this.x = blockWidth*this.column - blockWidth/2 - this.width/2;
     this.y = blockHeight*this.row - blockHeight/2 - this.height/2;
@@ -240,65 +108,65 @@ Obstacle.prototype = {
     },
     render: function() {
             ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    },
-    reset: function() {
-
-    },
-    status: function() {
-        
     }
 };
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
-Player = function(avatarIndex) {
-    this.height = images.avatar[avatarIndex].height;
-    this.width = images.avatar[avatarIndex].width;
-    
-    this.sprite = images.avatar[avatarIndex].url;
-    this.row = 5;
-    //set the start co-ordinates to the middle of the square. Assign a random column
-    this.x = blockWidth*3 - blockWidth/2 - this.width/2;
-    this.y = blockHeight*5 - blockHeight/2 - this.height/2;
 
-    this.upperBound = blockHeight*2 - blockHeight/2 - this.height/2;
-    this.lowerBound = blockHeight*3 - blockHeight/2 - this.height/2;
-    this.leftBound = blockWidth - blockWidth/2 - this.width/2;
-    this.rightBound = blockWidth*blockColumns - blockWidth/2 - this.width/2;
+//Player constructor class
+Player = function(avatarIndex) {
+    this.height = Images.avatar[avatarIndex].height;
+    this.width = Images.avatar[avatarIndex].width;
+    
+    this.sprite = Images.avatar[avatarIndex].url;
+    this.row = 5;
+    this.column = 3;
+
+    //set the start co-ordinates to the middle of the square. Assign a random column
+    this.x = blockWidth*this.column - blockWidth/2 - this.width/2;
+    this.y = blockHeight*this.row - blockHeight/2 - this.height/2;
+
+    this.upperRow = 2;
+    this.lowerRow = 3;
+    this.leftColumn = 1
+    this.rightColumn = 5;
 
     this.Index = avatarIndex;
 };
 
 Player.prototype = {
-    update: function() {
-
-    },
     render: function() {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     },
     handleInput: function(key) {
+        //always perform check to see wheher the player will be moving out of bounds or into a rock
         switch(key) {
             case 'left':
-                if(this.x !== this.leftBound) 
+                if(this.column !== this.leftColumn && obstacleFree(this.row, this.column-1)) {
                     this.x -= blockWidth;//left command code
+                    this.column--;
+                }
                 break;
             case 'right':
-                if(this.x !== this.rightBound)
-                    this.x += blockWidth;//right command code
+                if(this.column !== this.rightColumn && obstacleFree(this.row, this.column+1)) {
+                    this.x += blockWidth;
+                    this.column++;
+                }
                 break;
             case 'up':
-                if(this.y !== this.upperBound) {
+                if(this.row <= this.upperRow) {
+                    score += 20;
+                    crossing +=1;
+                    setTimeout(function() {
+                        player.reset();
+                    }, 100);
+                }
+                 else if(obstacleFree(this.row-1, this.column)) {
                     this.y -= blockHeight;//up command code
                     this.row--;
                 }
-                else {
-                    score += 20;
-                    crossing +=1;
-                    player.reset('success');
-                }
+                
                 break;
             case 'down':
-                if(this.y <= this.lowerBound) {
+                if(this.row <= this.lowerRow && obstacleFree(this.row + 1, this.column)) {
                     this.y += blockHeight;//down command code
                     this.row++;
                 }
@@ -306,21 +174,31 @@ Player.prototype = {
             default:
         }
     },
-    reset: function(outcome) {//called when collision or success happens
+    //called for collision or successful crossing
+    reset: function() {
         createPlayer(this.Index);
     }
 };
 
+//Assess whether there is an obstacle in the way of teh player and return true or false
+function obstacleFree(playerRow, playerCol) {
+    var noObstruction = true;
+    for(var obstacle in allObstacles) {
+        if(playerRow === allObstacles[obstacle].row && playerCol === allObstacles[obstacle].column)
+            noObstruction = false;
+    }
+    return noObstruction;
+}
+
+//generates a random integer based on the range provided
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-//Instantiate Enemny object and place all enemy objects in an array called allEnemies
-
-
+//Instantiate Enemy object and place all enemy objects in an array called allEnemies
 var enemies = function() {
     if(getRandomInt(1,1000)<20)
-        allEnemies.push(new Enemy(getRandomInt(0,images.enemy.length)));
+        allEnemies.push(new Enemy(getRandomInt(0,Images.enemy.length)));
 };
 
 //function to instantiate Player object in a variable called player
@@ -328,14 +206,27 @@ var createPlayer = function(index) {
     player = new Player(index);
 };
 
+//Instantiate static prize object and place all enemy objects in an array called allEnemies
 var staticPrizes = function() {
     if(getRandomInt(1,1000)<6)
-        allStaticPrizes.push(new StaticPrize(getRandomInt(0,images.staticModifiers.length)));
+        allStaticPrizes.push(new StaticPrize(getRandomInt(0,Images.staticModifiers.length)));
 };
 
+//Instantiate obstacle object and place all enemy objects in an array called allEnemies
 var obstacles = function() {
+    var row,
+        col;
+    //the row and column are only set if the new object is not placed in teh same square as the player
+    do {
+        var collide = false;
+        row = getRandomInt(2,5);
+        col = getRandomInt(1,6);
+        if(row === player.row && col === player.column)
+            collide = true;
+    }
+    while (collide);
     if(getRandomInt(1,1000)<5)
-        allObstacles.push(new Obstacle(getRandomInt(0,images.obstacles.length)));
+        allObstacles.push(new Obstacle(getRandomInt(0,Images.obstacles.length),row,col));
 };
 
 // This listens for key presses and sends the keys to your
@@ -347,6 +238,5 @@ document.addEventListener('keyup', function(e) {
         39: 'right',
         40: 'down'
     };
-    if(!isGameOver)
-        player.handleInput(allowedKeys[e.keyCode]);
+    player.handleInput(allowedKeys[e.keyCode]);
 });
