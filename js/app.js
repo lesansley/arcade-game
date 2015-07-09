@@ -49,7 +49,7 @@ Enemy.prototype = {
 };
 
 //object constructor class for the static prizes
-StaticPrize = function(prizeIndex) {
+var StaticPrize = function(prizeIndex) {
     this.height = Images.staticModifiers[prizeIndex].height;
     this.width = Images.staticModifiers[prizeIndex].width;
     this.sprite = Images.staticModifiers[prizeIndex].url;
@@ -86,7 +86,7 @@ StaticPrize.prototype = {
 };
 
 //object constructor class for the obstacles
-Obstacle = function(obstacleIndex,row,col) {
+var Obstacle = function(obstacleIndex, row, col) {
     this.height = Images.obstacles[obstacleIndex].height;
     this.width = Images.obstacles[obstacleIndex].width;
     this.sprite = Images.obstacles[obstacleIndex].url;
@@ -112,7 +112,7 @@ Obstacle.prototype = {
 };
 
 //Player constructor class
-Player = function(avatarIndex) {
+var Player = function(avatarIndex) {
     this.height = Images.avatar[avatarIndex].height;
     this.width = Images.avatar[avatarIndex].width;
     
@@ -140,13 +140,13 @@ Player.prototype = {
         //always perform check to see wheher the player will be moving out of bounds or into a rock
         switch(key) {
             case 'left':
-                if(this.column !== this.leftColumn && obstacleFree(this.row, this.column-1)) {
+                if(this.column !== this.leftColumn && !this.blocked(this.row, this.column-1)) {
                     this.x -= blockWidth;//left command code
                     this.column--;
                 }
                 break;
             case 'right':
-                if(this.column !== this.rightColumn && obstacleFree(this.row, this.column+1)) {
+                if(this.column !== this.rightColumn && !this.blocked(this.row, this.column+1)) {
                     this.x += blockWidth;
                     this.column++;
                 }
@@ -159,14 +159,14 @@ Player.prototype = {
                         player.reset();
                     }, 100);
                 }
-                 else if(obstacleFree(this.row-1, this.column)) {
+                 else if(!this.blocked(this.row-1, this.column)) {
                     this.y -= blockHeight;//up command code
                     this.row--;
                 }
-                
                 break;
             case 'down':
-                if(this.row <= this.lowerRow && obstacleFree(this.row + 1, this.column)) {
+                //does not allow player to step back onto the grass
+                if(this.row <= this.lowerRow && !this.blocked(this.row+1, this.column)) {
                     this.y += blockHeight;//down command code
                     this.row++;
                 }
@@ -177,18 +177,17 @@ Player.prototype = {
     //called for collision or successful crossing
     reset: function() {
         createPlayer(this.Index);
+    },
+    //Assess whether there is an obstacle in the way of the player and return true or false
+    blocked: function(playerRow, playerCol) {
+        var obstruction = false;
+        for(var obstacle in allObstacles) {
+            if(playerRow === allObstacles[obstacle].row && playerCol === allObstacles[obstacle].column)
+                obstruction = true;
+        }
+        return obstruction;
     }
 };
-
-//Assess whether there is an obstacle in the way of teh player and return true or false
-function obstacleFree(playerRow, playerCol) {
-    var noObstruction = true;
-    for(var obstacle in allObstacles) {
-        if(playerRow === allObstacles[obstacle].row && playerCol === allObstacles[obstacle].column)
-            noObstruction = false;
-    }
-    return noObstruction;
-}
 
 //generates a random integer based on the range provided
 function getRandomInt(min, max) {
@@ -197,7 +196,7 @@ function getRandomInt(min, max) {
 
 //Instantiate Enemy object and place all enemy objects in an array called allEnemies
 var enemies = function() {
-    if(getRandomInt(1,1000)<20)
+    if(getRandomInt(1,1000) < 20)
         allEnemies.push(new Enemy(getRandomInt(0,Images.enemy.length)));
 };
 
@@ -208,7 +207,7 @@ var createPlayer = function(index) {
 
 //Instantiate static prize object and place all enemy objects in an array called allEnemies
 var staticPrizes = function() {
-    if(getRandomInt(1,1000)<6)
+    if(getRandomInt(1,1000) < 6)
         allStaticPrizes.push(new StaticPrize(getRandomInt(0,Images.staticModifiers.length)));
 };
 
@@ -219,13 +218,13 @@ var obstacles = function() {
     //the row and column are only set if the new object is not placed in teh same square as the player
     do {
         var collide = false;
-        row = getRandomInt(2,5);
-        col = getRandomInt(1,6);
+        row = getRandomInt(2, 5);
+        col = getRandomInt(1, 6);
         if(row === player.row && col === player.column)
             collide = true;
     }
     while (collide);
-    if(getRandomInt(1,1000)<5)
+    if(getRandomInt(1,1000) < 5)
         allObstacles.push(new Obstacle(getRandomInt(0,Images.obstacles.length),row,col));
 };
 
