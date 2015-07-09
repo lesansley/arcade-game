@@ -188,11 +188,11 @@ var Engine = (function(global) {
         ctx.fillRect(blockWidth*blockColumns,0, blockWidth, canvas.height);
         
         //draw the prize images and points values beside the playing field
-        for(var i = 0; i < Images.staticModifiers.length; i++) {
-            ctx.drawImage(Resources.get(Images.staticModifiers[i].url), canvas.width - blockWidth/2 - Images.staticModifiers[i].width/2, (i+1) * blockHeight + Images.staticModifiers[i].height/2);
+        for(var i = 0; i < images.staticModifiers.length; i++) {
+            ctx.drawImage(Resources.get(images.staticModifiers[i].url), canvas.width - blockWidth/2 - images.staticModifiers[i].width/2, (i+1) * blockHeight + images.staticModifiers[i].height/2);
             ctx.font = '100 26px Orbitron';
             ctx.fillStyle='rgba(0,0,0,.65)';
-            ctx.fillText(Images.staticModifiers[i].points + 'pts', canvas.width - blockWidth/2 - ctx.measureText(Images.staticModifiers[i].points+'pts').width/2, (i+1) * blockHeight + blockHeight/2+15);
+            ctx.fillText(images.staticModifiers[i].points + 'pts', canvas.width - blockWidth/2 - ctx.measureText(images.staticModifiers[i].points+'pts').width/2, (i+1) * blockHeight + blockHeight/2+15);
         }
         
     }
@@ -206,8 +206,9 @@ var Engine = (function(global) {
         ctx.font = '900 40px Orbitron';
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
         ctx.fillText(scoreText, 5, blockHeight/2 + 40/2);
-        if(lives===1)
+        if(lives===1) {
             ctx.fillStyle = 'rgba(196, 30, 0, 0.5)';
+        }
         ctx.fillText('Lives: ' + lives, 318, blockHeight/2 + 40/2);
 
         //draw the background and Game Over text
@@ -271,7 +272,7 @@ var Engine = (function(global) {
     //It's only called once by the init() method.
     function reset() {
         document.getElementById('game-over').style.display = 'none';
-        createPlayer(getRandomInt(0,Images.avatar.length));
+        createPlayer(getRandomInt(0,images.avatar.length));
         setToRemove();
         removeEntities();
         isGameOver = false;
@@ -284,7 +285,7 @@ var Engine = (function(global) {
     //Pre-loads all the images required for the game.
     //The load function is called from the resources file.
     //sends the array to the function in resources.js
-    Resources.load(Images.loadImages());
+    Resources.load(images.loadImages());
         
     Resources.onReady(init);
 

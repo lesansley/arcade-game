@@ -106,17 +106,17 @@
 
     //Place all images into an array
     function loadImages() {
-    var allImages=[];
-    for(var pics in images){
-        for(var i = 0; i < images[pics].length; i++) {
-            allImages.push(images[pics][i].url);
+        var allImages=[];
+        for(var pics in images){
+            for(var i = 0; i < images[pics].length; i++) {
+                allImages.push(images[pics][i].url);
+            }
         }
-    }
-    return allImages;
+        return allImages;
     }
 
     //make the methods, variables and properties available from elsewhere
-    window.Images = { //Resources object JSON
+    window.images = { //Resources object JSON
         loadImages: loadImages, //load function
         images: images,
         avatar: images.avatar,
